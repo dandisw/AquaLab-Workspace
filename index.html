@@ -101,7 +101,7 @@ header {
 .sub-pane.active { display: block; }
 
 /* ===== TABLES ===== */
-.table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: auto; box-shadow: var(--shadow); margin-bottom: 14px; }
+.table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow-x: auto; box-shadow: var(--shadow); margin-bottom: 14px; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: var(--font-sans); }
 thead th { background: var(--surface-hover); color: var(--text2); padding: 10px 10px; text-align: center; font-weight: 600; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 12px; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
 thead th:last-child { border-right: none; }
@@ -112,12 +112,12 @@ tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--surface-hover); }
 
 /* ===== INPUTS ===== */
-.cell-input { width: 100%; padding: 6px 8px; background: transparent; border: 1px solid transparent; color: var(--text); border-radius: 5px; text-align: center; font-family: var(--font-mono); font-size: 13px; transition: all 0.2s; }
+.cell-input { width: 100%; padding: 6px 8px; background: transparent; border: 1px solid transparent; color: var(--text); border-radius: 5px; text-align: center; font-family: var(--font-mono); font-size: 13px; transition: all 0.2s; min-width: 60px; }
 .cell-input::placeholder { color: var(--text3); opacity: 0.6; }
 .cell-input:hover { border-color: var(--border); }
 .cell-input:focus { border-color: var(--primary); outline: none; background: var(--primary-light); box-shadow: 0 0 0 2px rgba(56,189,248,0.15); }
-.cell-input.text-left { text-align: left; font-family: var(--font-sans); }
-.cell-select { width: 100%; padding: 6px 4px; background: transparent; border: 1px solid transparent; color: var(--text); border-radius: 5px; font-family: var(--font-sans); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.cell-input.text-left { text-align: left; font-family: var(--font-sans); min-width: 120px; }
+.cell-select { width: 100%; padding: 6px 4px; background: transparent; border: 1px solid transparent; color: var(--text); border-radius: 5px; font-family: var(--font-sans); font-size: 13px; cursor: pointer; transition: all 0.2s; min-width: 100px; }
 .cell-select:hover, .cell-select:focus { border-color: var(--primary); outline: none; background: var(--primary-light); }
 .cell-select option { background: var(--surface); color: var(--text); }
 
@@ -188,6 +188,64 @@ textarea.form-control { resize: vertical; min-height: 52px; font-family: var(--f
 .cycle-row:last-child { border-bottom: none; }
 .cycle-label { color: var(--text3); }
 .cycle-val { font-family: var(--font-mono); font-weight: 500; color: var(--text); }
+
+/* ===================================================================
+   RESPONSIVE DESIGN MOBILE (SMARTPHONE)
+=================================================================== */
+@media (max-width: 768px) {
+  .main-container { flex-direction: column; }
+  
+  .sidebar { 
+    width: 100%; 
+    height: auto;
+    flex-direction: row; 
+    padding: 10px 15px; 
+    border-right: none; 
+    border-bottom: 1px solid var(--border); 
+    overflow-x: auto; 
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; 
+  }
+  
+  .menu-group { 
+    display: inline-flex; 
+    align-items: center; 
+    margin-bottom: 0; 
+    margin-right: 10px; 
+    border-right: 1px solid var(--border);
+    padding-right: 10px;
+  }
+  .menu-group:last-child { border-right: none; }
+  
+  .menu-title { display: none; }
+  .menu-item { padding: 8px 14px; margin-right: 5px; font-size: 12px; }
+  
+  .content-area { padding: 16px; }
+  header { padding: 10px 16px; height: auto; min-height: 60px; flex-wrap: wrap; gap: 10px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  
+  .brand-text { font-size: 18px; }
+  .brand-sub { margin-left: 28px; font-size: 10px; }
+  .page-title { font-size: 20px; }
+  
+  .grid-2 { grid-template-columns: 1fr; gap: 12px; }
+  
+  .form-group label { font-size: 10px; }
+  
+  .toolbar { width: 100%; justify-content: space-between; }
+  .toolbar .btn { flex: 1; justify-content: center; }
+  
+  .card-title { font-size: 14px; }
+  .sub-nav { width: 100%; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; -webkit-overflow-scrolling: touch; }
+  .sub-btn { flex-shrink: 0; }
+  
+  .stat-box { padding: 10px; }
+  .stat-box .stat-value { font-size: 18px; }
+  
+  .dialog { width: 95vw; margin: 10px; max-height: 90vh; }
+  .dialog-header { font-size: 16px; padding: 14px 16px; }
+  .dialog-body { padding: 16px; }
+}
 </style>
 </head>
 <body>
@@ -247,6 +305,7 @@ textarea.form-control { resize: vertical; min-height: 52px; font-family: var(--f
       </div>
       <div class="legend">
         <strong>Keterangan kolom:</strong> W0 = bobot rata-rata awal (g) | Wt = bobot rata-rata akhir (g) | N0 = jumlah ikan awal | Nt = jumlah ikan akhir | F = total pakan (g) | t = lama pemeliharaan (hari).
+        Kolom berwarna <span style="color:var(--success)">hijau</span> = optimal · <span style="color:var(--warning)">kuning</span> = perlu perhatian · <span style="color:var(--danger)">merah</span> = perlu review data.
       </div>
       <div class="table-wrap">
         <table id="invivoTable">
@@ -964,7 +1023,6 @@ function addWaterRow() {
   tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris ini?')) { tr.remove(); evalWater(); } }));
 }
 
-// Hitung fraksi NH3 dari TAN (Emerson et al. 1975)
 function calcNH3(tan, pH, tempC) {
   const pKa = 0.09018 + 2729.92 / (tempC + 273.15);
   const frac = 1 / (1 + Math.pow(10, pKa - pH));
@@ -984,7 +1042,6 @@ function evalWater() {
     if(nh3>0.02) nh3El.style.color='var(--danger)'; else if(nh3>0.01) nh3El.style.color='var(--warning)'; else nh3El.style.color='var(--success)';
     amoniaHist.push({tan:n,nh3}); latest={t,p,d,n,nh3}; hasValid=true;
 
-    // Evaluasi status multi-parameter
     let isCrit = (nh3>=0.02 || p>=8.5 || p<=6.0 || d<=3.0 || t>=34 || t<=22 || n>=0.5);
     let isWarn = (nh3>=0.01 || n>=0.3 || (p>8.0&&p<8.5)||(p>6.0&&p<6.8)||d<=4.5||t>=32||t<=25);
     if(isCrit) scEl.innerHTML='<span class="badge badge-danger">⚠ Kritis</span>';
@@ -1504,7 +1561,12 @@ function exportCSV(tId, fn) {
 // INIT
 // ===================================================================
 window.onload = function() {
-  addInvivoRow(); addWaterRow(); addOdRow(); addTpcRow(); addZonaRow(); addGelRow();
+  addInvivoRow();
+  addWaterRow();
+  addOdRow();
+  addTpcRow();
+  addZonaRow();
+  addGelRow();
   calcPCR(); updateTemplateVol();
 };
 </script>
