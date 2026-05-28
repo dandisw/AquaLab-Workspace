@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaLab Workspace by DSW</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --bg: #F8FAFC; --surface: #FFFFFF; --surface-hover: #F1F5F9;
+  --border: #E2E8F0; --border-focus: #94A3B8;
+  --text: #0F172A; --text2: #475569; --text3: #94A3B8;
+  --primary: #0284C7; --primary-light: #E0F2FE; --primary-dark: #0369A1;
+  --success: #16A34A; --success-light: #DCFCE7;
+  --danger: #DC2626; --danger-light: #FEE2E2;
+  --warning: #D97706; --warning-light: #FEF3C7;
+  --purple: #7C3AED; --purple-light: #EDE9FE;
+  
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-serif: 'Fraunces', serif;
+  
+  --radius: 10px;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+  --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.04);
+}
+[data-theme="dark"] {
+  --bg: #0F172A; --surface: #1E293B; --surface-hover: #334155;
+  --border: #334155; --border-focus: #475569;
+  --text: #F8FAFC; --text2: #CBD5E1; --text3: #94A3B8;
+  --primary: #38BDF8; --primary-light: #0C4A6E; --primary-dark: #7DD3FC;
+  --success: #4ADE80; --success-light: #064E3B;
+  --danger: #F87171; --danger-light: #7F1D1D;
+  --warning: #FCD34D; --warning-light: #451A03;
+  --purple: #C084FC; --purple-light: #3B0764;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; font-size: 14px; transition: background 0.3s, color 0.3s; }
+
+/* ===== HEADER ===== */
+header {
+  background: var(--surface); padding: 0 24px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 10;
+  box-shadow: var(--shadow); transition: background 0.3s;
+}
+.brand { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+.brand-top { display: flex; align-items: center; gap: 8px; }
+.brand-icon { font-size: 22px; }
+.brand-text { font-family: var(--font-serif); font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+.brand-text span { color: var(--primary); }
+.brand-sub { font-family: var(--font-sans); font-size: 11px; font-weight: 400; color: var(--text3); margin-left: 36px; margin-top: -3px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ===== BUTTONS ===== */
+.btn { padding: 7px 14px; border-radius: 6px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-outline { background: transparent; border-color: var(--border); color: var(--text2); }
+.btn-outline:hover { background: var(--surface-hover); color: var(--text); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger-soft { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+.btn-icon { padding: 6px 8px; background: transparent; border: 1px solid var(--border); color: var(--text3); border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+.btn-icon:hover { background: var(--surface-hover); color: var(--danger); border-color: var(--danger); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+/* ===== LAYOUT ===== */
+.main-container { display: flex; flex: 1; overflow: hidden; }
+.sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 16px 0 0; overflow-y: auto; flex-shrink: 0; transition: background 0.3s; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.menu-group { margin-bottom: 12px; }
+.menu-title { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text3); padding: 6px 20px 6px; letter-spacing: 0.5px; }
+.menu-item { padding: 9px 20px; font-size: 13px; color: var(--text2); cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 10px; font-weight: 500; border-left: 3px solid transparent; }
+.menu-item:hover { background: var(--primary-light); color: var(--primary); }
+.menu-item.active { background: var(--primary-light); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+.sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid var(--border); }
+
+.content-area { flex: 1; overflow-y: auto; padding: 28px 36px; background: var(--bg); transition: background 0.3s; }
+.content-area::-webkit-scrollbar { width: 6px; }
+.content-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.tab-pane { display: none; animation: fadeUp 0.25s ease; }
+.tab-pane.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== PAGE HEADER ===== */
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.page-title { font-family: var(--font-serif); font-size: 24px; font-weight: 600; color: var(--text); }
+.page-desc { font-family: var(--font-sans); font-size: 13px; color: var(--text3); margin-top: 5px; }
+.toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* ===== SUB NAV (PILLS) ===== */
+.sub-nav { display: flex; gap: 4px; margin-bottom: 22px; background: var(--surface-hover); padding: 4px; border-radius: 8px; width: fit-content; border: 1px solid var(--border); }
+.sub-btn { padding: 7px 16px; border: none; background: transparent; color: var(--text3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.2s; font-family: var(--font-sans); }
+.sub-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow); }
+.sub-pane { display: none; animation: fadeUp 0.2s ease; }
+.sub-pane.active { display: block; }
+
+/* ===== TABLES ===== */
+.table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: auto; box-shadow: var(--shadow); margin-bottom: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: var(--font-sans); }
+thead th { background: var(--surface-hover); color: var(--text2); padding: 10px 10px; text-align: center; font-weight: 600; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 12px; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
+thead th:last-child { border-right: none; }
+thead th:first-child { text-align: left; }
+tbody td { padding: 6px 8px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); text-align: center; vertical-align: middle; }
+tbody td:last-child { border-right: none; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--surface-hover); }
+
+/* ===== INPUTS ===== */
+.cell-input { width: 100%; padding: 6px 8px; background: transparent; border: 1px solid transparent; color: var(--text); border-radius: 5px; text-align: center; font-family: var(--font-mono); font-size: 13px; transition: all 0.2s; }
+.cell-input::placeholder { color: var(--text3); opacity: 0.6; }
+.cell-input:hover { border-color: var(--border); }
+.cell-input:focus { border-color: var(--primary); outline: none; background: var(--primary-light); box-shadow: 0 0 0 2px rgba(56,189,248,0.15); }
+.cell-input.text-left { text-align: left; font-family: var(--font-sans); }
+.cell-select { width: 100%; padding: 6px 4px; background: transparent; border: 1px solid transparent; color: var(--text); border-radius: 5px; font-family: var(--font-sans); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.cell-select:hover, .cell-select:focus { border-color: var(--primary); outline: none; background: var(--primary-light); }
+.cell-select option { background: var(--surface); color: var(--text); }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-family: var(--font-sans); font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.form-control { width: 100%; padding: 9px 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 6px; font-family: var(--font-mono); font-size: 13px; outline: none; transition: all 0.2s; }
+.form-control::placeholder { color: var(--text3); opacity: 0.6; }
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(56,189,248,0.15); background: var(--surface); }
+textarea.form-control { resize: vertical; min-height: 52px; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.5px; }
+
+/* ===== RESULT BADGES ===== */
+.badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; font-family: var(--font-sans); }
+.badge-success { background: var(--success-light); color: var(--success); }
+.badge-warning { background: var(--warning-light); color: var(--warning); }
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+.badge-info { background: var(--primary-light); color: var(--primary); }
+.badge-purple { background: var(--purple-light); color: var(--purple); }
+.badge-neutral { background: var(--surface-hover); color: var(--text3); }
+
+.val-ok { color: var(--success); font-weight: 700; font-family: var(--font-mono); }
+.val-warn { color: var(--warning); font-weight: 700; font-family: var(--font-mono); }
+.val-bad { color: var(--danger); font-weight: 700; font-family: var(--font-mono); }
+.val-dim { color: var(--text3); font-family: var(--font-mono); }
+.val-num { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+.sci-not { font-family: var(--font-mono); color: var(--success); font-weight: 600; font-size: 13px; }
+
+/* ===== CARDS ===== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+.card { background: var(--surface); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+.card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-family: var(--font-sans); }
+
+.stat-box { background: var(--bg); border: 1px solid var(--border); padding: 14px 12px; border-radius: 8px; text-align: center; }
+.stat-box .stat-label { font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; color: var(--text3); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px; }
+.stat-box .stat-value { font-size: 24px; font-weight: 600; font-family: var(--font-mono); color: var(--text); line-height: 1; }
+.stat-box .stat-unit { font-size: 11px; color: var(--text3); margin-top: 4px; font-family: var(--font-sans); }
+
+.ews-panel { padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--text3); font-size: 14px; line-height: 1.6; box-shadow: var(--shadow); transition: all 0.4s; font-family: var(--font-sans); }
+.legend { background: var(--surface-hover); padding: 12px 16px; border-radius: 6px; font-size: 12px; color: var(--text3); margin-bottom: 16px; line-height: 1.6; border: 1px dashed var(--border); font-family: var(--font-sans); }
+.legend strong { color: var(--text2); }
+
+.info-box { padding: 12px 16px; border-radius: 8px; font-size: 13px; line-height: 1.6; margin-bottom: 16px; border-left: 4px solid; font-family: var(--font-sans); }
+.info-box.info { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+.info-box.warning { background: var(--warning-light); color: var(--warning); border-color: var(--warning); }
+.info-box.success { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.info-box.danger { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+
+/* ===== TOAST & DIALOG ===== */
+.toast-container { position: fixed; bottom: 20px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: var(--surface); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; font-family: var(--font-sans); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 10px; pointer-events: all; animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+.toast.hide { animation: slideOut 0.3s ease forwards; }
+@keyframes slideOut { to { opacity: 0; transform: translateX(20px); } }
+
+[data-tip] { position: relative; cursor: help; }
+[data-tip]::after { content: attr(data-tip); position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: #0F172A; color: #F8FAFC; font-size: 12px; padding: 6px 10px; border-radius: 5px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 100; font-family: var(--font-sans); font-weight: 400; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+[data-tip]:hover::after { opacity: 1; }
+
+.overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 200; }
+.overlay.active { display: flex; }
+.dialog { background: var(--surface); width: 440px; max-width: 95vw; border-radius: 12px; box-shadow: var(--shadow-md); overflow: hidden; }
+.dialog-header { padding: 18px 24px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 18px; font-family: var(--font-serif); color: var(--text); display: flex; justify-content: space-between; align-items: center; }
+.dialog-body { padding: 24px; display: flex; flex-direction: column; gap: 14px; font-family: var(--font-sans); }
+.dialog-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-hover); }
+
+.section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text3); margin: 24px 0 12px; display: flex; align-items: center; gap: 10px; font-family: var(--font-sans); }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.cycle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 13px; font-family: var(--font-sans); }
+.cycle-row:last-child { border-bottom: none; }
+.cycle-label { color: var(--text3); }
+.cycle-val { font-family: var(--font-mono); font-weight: 500; color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-top">
+      <span class="brand-icon">🔬</span>
+      <span class="brand-text">Aqua<span>Lab</span></span>
+    </div>
+    <span class="brand-sub">Workspace by DSW</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" id="theme-btn" onclick="toggleTheme()">🌗 Tema</button>
+  </div>
+</header>
+
+<div class="main-container">
+  <nav class="sidebar">
+    <div class="menu-group">
+      <div class="menu-title">Performa Budidaya</div>
+      <div class="menu-item active" onclick="switchView('v-invivo', this)">🐟 Analisis In Vivo</div>
+    </div>
+    <div class="menu-group">
+      <div class="menu-title">Kualitas Air</div>
+      <div class="menu-item" onclick="switchView('v-water', this)">💧 EWS Kualitas Air</div>
+    </div>
+    <div class="menu-group">
+      <div class="menu-title">Riset In Vitro</div>
+      <div class="menu-item" onclick="switchView('v-microbio', this)">🦠 Lab Mikrobiologi</div>
+      <div class="menu-item" onclick="switchView('v-invitro', this)">🧫 Lab Molekuler</div>
+    </div>
+    <div class="menu-group">
+      <div class="menu-title">Manajemen Data</div>
+      <div class="menu-item" onclick="switchView('v-logbook', this)">📓 Logbook Penelitian</div>
+      <div class="menu-item" onclick="switchView('v-inv', this)">📦 Inventaris Reagen</div>
+      <div class="menu-item" onclick="switchView('v-needs', this)">📋 Kebutuhan & Jadwal</div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn btn-outline" style="width:100%; justify-content:center;" onclick="showHelp()">❓ Panduan Formula</button>
+    </div>
+  </nav>
+
+  <main class="content-area">
+
+    <div id="v-invivo" class="tab-pane active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Performa In Vivo</div>
+          <div class="page-desc">Kalkulasi SR, ADG, SGR, dan FCR berbasis biomassa per wadah uji.</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-outline btn-sm" onclick="showInvivoGuide()">📐 Panduan</button>
+          <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS()">📊 Ekspor SPSS</button>
+          <button class="btn btn-success btn-sm" onclick="exportCSV('invivoTable', 'Performa_InVivo.csv')">📥 Unduh CSV</button>
+        </div>
+      </div>
+      <div class="legend">
+        <strong>Keterangan kolom:</strong> W0 = bobot rata-rata awal (g) | Wt = bobot rata-rata akhir (g) | N0 = jumlah ikan awal | Nt = jumlah ikan akhir | F = total pakan (g) | t = lama pemeliharaan (hari).
+      </div>
+      <div class="table-wrap">
+        <table id="invivoTable">
+          <thead>
+            <tr>
+              <th style="width:110px; text-align:left;">Perlakuan</th>
+              <th style="width:60px;">Wadah</th>
+              <th data-tip="Bobot rata-rata awal (g)">W0 (g)</th>
+              <th data-tip="Bobot rata-rata akhir (g)">Wt (g)</th>
+              <th data-tip="Jumlah ikan awal">N0</th>
+              <th data-tip="Jumlah ikan akhir">Nt</th>
+              <th data-tip="Total pakan diberikan (g)">Pakan (g)</th>
+              <th data-tip="Lama pemeliharaan (hari)">Hari (t)</th>
+              <th data-tip="Survival Rate (%)">SR (%)</th>
+              <th data-tip="Average Daily Growth (g/hari)">ADG (g/hr)</th>
+              <th data-tip="Specific Growth Rate (%/hari)">SGR (%/hr)</th>
+              <th data-tip="Feed Conversion Ratio">FCR</th>
+              <th style="width:36px;"></th>
+            </tr>
+          </thead>
+          <tbody id="invivoBody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="addInvivoRow()">+ Tambah Wadah Uji</button>
+    </div>
+
+    <div id="v-water" class="tab-pane">
+      <div class="page-header">
+        <div>
+          <div class="page-title">EWS Kualitas Air</div>
+          <div class="page-desc">Pemantauan harian dengan deteksi toksisitas amonia terionisasi (NH₃).</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-success btn-sm" onclick="exportCSV('waterTable', 'Kualitas_Air.csv')">📥 Unduh CSV</button>
+        </div>
+      </div>
+      <div id="ewsPanel" class="ews-panel">
+        <strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar</strong><br>
+        <span style="color:var(--text3); font-size:13px;">Lengkapi data harian untuk mengaktifkan analisis toksisitas amonia.</span>
+      </div>
+      <div class="table-wrap">
+        <table id="waterTable">
+          <thead>
+            <tr>
+              <th style="width:70px;">Hari Ke-</th>
+              <th data-tip="°C, optimal 26-30">Suhu (°C)</th>
+              <th data-tip="Optimal 6.8-8.0">pH</th>
+              <th data-tip="mg/L, minimal 5">DO (mg/L)</th>
+              <th data-tip="Total amonia nitrogen (ppm)">TAN (ppm)</th>
+              <th data-tip="NH₃ bebas terkalkulasi">NH₃ Bebas</th>
+              <th>Status</th>
+              <th style="width:36px;"></th>
+            </tr>
+          </thead>
+          <tbody id="waterBody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="addWaterRow()">+ Tambah Data Harian</button>
+    </div>
+
+    <div id="v-microbio" class="tab-pane">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Lab Mikrobiologi</div>
+          <div class="page-desc">Kuantifikasi sel, biokinetika, dan uji antagonis (zona hambat).</div>
+        </div>
+      </div>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="openSub(this, 'mic-bio', 'mic-group')">Biokinetika & OD600</button>
+        <button class="sub-btn" onclick="openSub(this, 'mic-tpc', 'mic-group')">TPC & Koloni</button>
+        <button class="sub-btn" onclick="openSub(this, 'mic-zona', 'mic-group')">Zona Hambat</button>
+      </div>
+
+      <div id="mic-bio" class="sub-pane mic-group active">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="section-label" style="margin:0;">Tabel Konversi Kepadatan OD600</div>
+          <button class="btn btn-success btn-sm" onclick="exportCSV('odTable', 'OD600_Data.csv')">📥 Ekspor OD600</button>
+        </div>
+        <div class="table-wrap">
+          <table id="odTable">
+            <thead><tr>
+              <th style="text-align:left;">ID Isolat</th>
+              <th data-tip="Nilai absorbansi OD600">OD600 (Abs)</th>
+              <th data-tip="Faktor konversi spesifik spesies (default ~8×10⁸)">Faktor Konversi</th>
+              <th>Estimasi Sel/mL</th>
+              <th style="width:36px;"></th>
+            </tr></thead>
+            <tbody id="odBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-bottom:24px;" onclick="addOdRow()">+ Tambah Baris OD600</button>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">📈 Kalkulator Kinetika Fase Log</div>
+            <div class="grid-2" style="margin-bottom:12px; gap:12px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Waktu Awal t₁ (jam)</label>
+                <input type="number" id="bioT1" class="form-control" placeholder="Contoh: 2" oninput="calcKinetika()">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>OD600 Awal (OD₁)</label>
+                <input type="number" id="bioOd1" class="form-control" placeholder="Contoh: 0.20" step="0.01" oninput="calcKinetika()">
+              </div>
+            </div>
+            <div class="grid-2" style="gap:12px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Waktu Akhir t₂ (jam)</label>
+                <input type="number" id="bioT2" class="form-control" placeholder="Contoh: 6" oninput="calcKinetika()">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>OD600 Akhir (OD₂)</label>
+                <input type="number" id="bioOd2" class="form-control" placeholder="Contoh: 1.80" step="0.01" oninput="calcKinetika()">
+              </div>
+            </div>
+            <div class="info-box info" style="margin-top:14px; margin-bottom:0;">
+              Pastikan titik data berada di <strong>fase logaritmik</strong> (OD₂ &gt; OD₁ &gt; 0). Gunakan minimal 2 titik waktu.
+            </div>
+          </div>
+          <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:18px;">
+            <div class="stat-box">
+              <div class="stat-label">Laju Pertumbuhan Spesifik (µ)</div>
+              <div class="stat-value" id="resMu" style="color:var(--primary);">—</div>
+              <div class="stat-unit">jam⁻¹</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Waktu Generasi (Pembelahan)</div>
+              <div class="stat-value" id="resGen" style="color:var(--success);">—</div>
+              <div class="stat-unit">jam</div>
+            </div>
+            <div id="kinetikaAlert" style="display:none;" class="info-box danger" style="margin-bottom:0; font-size:12px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mic-tpc" class="sub-pane mic-group">
+        <div class="legend" style="margin-bottom:14px;">
+          <strong>Rumus TPC:</strong> (Σkoloni / volume plating) × 10<sup>faktor pengenceran</sup> CFU/mL.
+          Koloni &lt;30 = TFTC (Too Few To Count) · Koloni &gt;300 = TNTC (Too Numerous To Count). Gunakan pengenceran yang menghasilkan 30–300 koloni.
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+          <button class="btn btn-success btn-sm" onclick="exportCSV('tpcTable', 'TPC_Data.csv')">📥 Ekspor TPC</button>
+        </div>
+        <div class="table-wrap">
+          <table id="tpcTable">
+            <thead><tr>
+              <th style="text-align:left;">ID Isolat</th>
+              <th data-tip="Jumlah koloni terhitung (30–300)">Σ Koloni</th>
+              <th data-tip="Faktor pengenceran: 10^x (isi nilai x)">Pengenceran (10^x)</th>
+              <th data-tip="Volume plating dalam mL (biasanya 0.1)">Vol Plating (mL)</th>
+              <th>TPC (CFU/mL)</th>
+              <th style="width:36px;"></th>
+            </tr></thead>
+            <tbody id="tpcBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addTpcRow()">+ Tambah Baris TPC</button>
+      </div>
+
+      <div id="mic-zona" class="sub-pane mic-group">
+        <div class="legend" style="margin-bottom:14px;">
+          <strong>Kategori Daya Hambat (Davis & Stout, 1971):</strong>
+          Zona &lt; 5 mm = Lemah · 5–10 mm = Sedang · 10–20 mm = Kuat · &gt; 20 mm = Sangat Kuat.
+          <em>Lebar zona = (Total diameter − diameter sumuran / disk) / 2</em>.
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+          <button class="btn btn-success btn-sm" onclick="exportCSV('zonaTable', 'ZonaHambat_Data.csv')">📥 Ekspor Data</button>
+        </div>
+        <div class="table-wrap">
+          <table id="zonaTable">
+            <thead><tr>
+              <th style="text-align:left;">Isolat vs Patogen</th>
+              <th data-tip="Total diameter zona bening (mm), termasuk sumuran/disk">Ø Total (mm)</th>
+              <th data-tip="Diameter sumuran atau disk (umumnya 6–8 mm)">Ø Sumuran (mm)</th>
+              <th data-tip="= (Total − Sumuran) / 2">Lebar Zona (mm)</th>
+              <th>Kategori</th>
+              <th style="width:36px;"></th>
+            </tr></thead>
+            <tbody id="zonaBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addZonaRow()">+ Tambah Sampel Uji</button>
+      </div>
+    </div>
+
+    <div id="v-invitro" class="tab-pane">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Lab Molekuler</div>
+          <div class="page-desc">DNA Barcoding, desain primer, PCR Master Mix, dan log elektroforesis.</div>
+        </div>
+      </div>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="openSub(this, 'mol-primer', 'mol-group')">Profil Primer & Siklus PCR</button>
+        <button class="sub-btn" onclick="openSub(this, 'mol-mix', 'mol-group')">Master Mix Calculator</button>
+        <button class="sub-btn" onclick="openSub(this, 'mol-gel', 'mol-group')">Log Elektroforesis</button>
+      </div>
+
+      <div id="mol-primer" class="sub-pane mol-group active">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🧬 Input Sekuens Primer (5′ → 3′)</div>
+            <div class="form-group">
+              <label>Primer Forward</label>
+              <textarea id="seqFwd" class="form-control" rows="2" placeholder="ATGCGTACGTAGCTA..." oninput="analyzePrimer()"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Primer Reverse</label>
+              <textarea id="seqRev" class="form-control" rows="2" placeholder="CGATGCTAGCTAGCT..." oninput="analyzePrimer()"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Template DNA Target <span style="text-transform:none; color:var(--text3);">(opsional – estimasi ukuran produk)</span></label>
+              <textarea id="seqTemplate" class="form-control" rows="2" placeholder="Tempel sekuens target di sini" oninput="analyzePrimer()"></textarea>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:14px;">
+              <div class="card-title">📊 Profil Fisik Primer</div>
+              <div class="table-wrap" style="margin-bottom:10px;">
+                <table style="font-size:12px;">
+                  <thead><tr><th style="text-align:left;">Primer</th><th>Panjang (nt)</th><th>GC (%)</th><th>Tm (°C)</th><th>Validasi</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td style="text-align:left; padding:8px; font-weight:600;">Forward</td>
+                      <td id="resFwdLen" class="val-dim">—</td>
+                      <td id="resFwdGc" class="val-dim">—</td>
+                      <td id="resFwdTm" class="val-dim">—</td>
+                      <td id="resFwdVal">—</td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:left; padding:8px; font-weight:600;">Reverse</td>
+                      <td id="resRevLen" class="val-dim">—</td>
+                      <td id="resRevGc" class="val-dim">—</td>
+                      <td id="resRevTm" class="val-dim">—</td>
+                      <td id="resRevVal">—</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--border);">
+                <span style="color:var(--text3); font-size:12px;">Estimasi Product Size:</span>
+                <strong id="resProdSize" style="font-family:var(--font-mono); font-size:13px; color:var(--text);">—</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--border);">
+                <span style="color:var(--text3); font-size:12px;">ΔTm (selisih primer):</span>
+                <strong id="resDeltaTm" style="font-family:var(--font-mono); font-size:13px; color:var(--text);">—</strong>
+              </div>
+              <div id="primerAlert" style="display:none; margin-top:10px;"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">⚙️ Rekomendasi Siklus Thermocycler</div>
+              <div class="cycle-row"><span class="cycle-label">Denaturasi Awal</span><span class="cycle-val">95 °C · 3 menit</span></div>
+              <div class="cycle-row"><span class="cycle-label">Denaturasi</span><span class="cycle-val">95 °C · 30 detik</span></div>
+              <div class="cycle-row"><span class="cycle-label">Annealing (Ta)</span><span id="resAnnealing" class="cycle-val val-ok">—</span></div>
+              <div class="cycle-row"><span class="cycle-label">Ekstensi (72°C)</span><span id="resExtension" class="cycle-val val-ok">—</span></div>
+              <div class="cycle-row"><span class="cycle-label">Ekstensi Akhir</span><span class="cycle-val">72 °C · 5 menit</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mol-mix" class="sub-pane mol-group">
+        <div class="info-box info" style="margin-bottom:16px;">
+          Sesuaikan target volume reaksi dan template. Sistem otomatis akan menghitung target <strong>Master Mix = (Total Reaksi - Template)</strong> dan memvalidasi kecocokan komponen yang Anda racik.
+        </div>
+        
+        <div class="card" style="margin-bottom:16px; padding:15px;">
+          <div style="display:flex; align-items:center; gap:16px; flex-wrap: wrap;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Jml Reaksi / Sampel:</label>
+              <input type="number" id="pcrSamples" class="form-control" style="width:100px;" placeholder="Cth: 10" oninput="calcPCR()">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Target Vol. Total Reaksi (µL):</label>
+              <input type="number" id="pcrTargetVol" class="form-control" style="width:140px;" value="25" oninput="validateMixTotal()">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Vol. Template DNA (µL):</label>
+              <input type="number" id="pcrTemplateVol" class="form-control" style="width:140px;" value="2" oninput="updateTemplateVol()">
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; margin-top:20px; font-size:12px; color:var(--text3);">
+              <span>(+ overhead 10% dihitung otomatis)</span>
+            </div>
+            <div style="margin-left:auto; margin-top:15px;">
+              <button class="btn btn-success btn-sm" onclick="exportCSV('invitroTable', 'PCR_MasterMix.csv')">📥 Ekspor CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="invitroTable">
+            <thead><tr>
+              <th style="text-align:left;">Komponen Reagen</th>
+              <th>Vol 1× Reaksi (µL)</th>
+              <th>Total n× (µL)</th>
+              <th>Total + 10% overhead (µL)</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td style="text-align:left; padding:8px;">Nuclease-Free Water (ddH₂O)</td>
+                <td><input type="number" id="vWater" placeholder="Cth: 8.5" step="0.1" class="cell-input" oninput="calcPCR(); validateMixTotal()"></td>
+                <td class="res-pcr val-dim">—</td>
+                <td class="res-pcr-ov val-ok">—</td>
+              </tr>
+              <tr>
+                <td style="text-align:left; padding:8px;">PCR Master Mix (2×)</td>
+                <td><input type="number" id="vMix" placeholder="Cth: 12.5" step="0.1" class="cell-input" oninput="calcPCR(); validateMixTotal()"></td>
+                <td class="res-pcr val-dim">—</td>
+                <td class="res-pcr-ov val-ok">—</td>
+              </tr>
+              <tr>
+                <td style="text-align:left; padding:8px;">Primer Forward (10 µM)</td>
+                <td><input type="number" id="vFwd" placeholder="Cth: 1.0" step="0.1" class="cell-input" oninput="calcPCR(); validateMixTotal()"></td>
+                <td class="res-pcr val-dim">—</td>
+                <td class="res-pcr-ov val-ok">—</td>
+              </tr>
+              <tr>
+                <td style="text-align:left; padding:8px;">Primer Reverse (10 µM)</td>
+                <td><input type="number" id="vRev" placeholder="Cth: 1.0" step="0.1" class="cell-input" oninput="calcPCR(); validateMixTotal()"></td>
+                <td class="res-pcr val-dim">—</td>
+                <td class="res-pcr-ov val-ok">—</td>
+              </tr>
+              <tr style="background:var(--surface-hover)">
+                <td style="text-align:left; padding:8px; color:var(--text3);">Template DNA <em style="font-size:11px;">(langsung ke sumuran)</em></td>
+                <td><input type="number" id="tblTemplateVol" value="2" disabled class="cell-input" style="opacity:0.5; color:var(--text3);"></td>
+                <td style="color:var(--text3); font-size:12px; font-style:italic;">Di luar mix</td>
+                <td style="color:var(--text3); font-size:12px; font-style:italic;">Di luar mix</td>
+              </tr>
+              <tr style="font-weight:700; background:var(--primary-light)">
+                <td style="text-align:left; padding:10px 8px; color:var(--primary); font-size:14px;">Total Volume Mix</td>
+                <td id="mixTotalSingle" style="font-family:var(--font-mono); text-align:center; color:var(--primary); font-size:15px;">—</td>
+                <td id="mixTotalN" style="font-family:var(--font-mono); text-align:center; color:var(--primary); font-size:15px;">—</td>
+                <td id="mixTotalNov" style="font-family:var(--font-mono); text-align:center; color:var(--primary); font-size:15px;">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="mixAlert" style="display:none;" class="info-box warning" style="margin-top:10px;"></div>
+      </div>
+
+      <div id="mol-gel" class="sub-pane mol-group">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">⚡ Parameter Elektroforesis</div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <div class="form-group" style="flex:1; min-width:120px; margin-bottom:0;">
+              <label>Konsentrasi Agarose (%)</label>
+              <input type="number" step="0.5" placeholder="Cth: 1.5" class="form-control" id="gelAgarose">
+            </div>
+            <div class="form-group" style="flex:1; min-width:100px; margin-bottom:0;">
+              <label>Voltase (V)</label>
+              <input type="number" placeholder="Cth: 100" class="form-control" id="gelVolt">
+            </div>
+            <div class="form-group" style="flex:1; min-width:100px; margin-bottom:0;">
+              <label>Durasi (menit)</label>
+              <input type="number" placeholder="Cth: 45" class="form-control" id="gelTime">
+            </div>
+            <div class="form-group" style="flex:1; min-width:120px; margin-bottom:0;">
+              <label>Buffer</label>
+              <input type="text" placeholder="Cth: TAE 1×" class="form-control" id="gelBuffer">
+            </div>
+            <div class="form-group" style="flex:1; min-width:120px; margin-bottom:0;">
+              <label>DNA Ladder</label>
+              <input type="text" placeholder="Cth: 100 bp" class="form-control" id="gelLadder">
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
+          <button class="btn btn-success btn-sm" onclick="exportGelCSV()">📥 Ekspor Log</button>
+        </div>
+        <div class="table-wrap">
+          <table id="gelTable">
+            <thead><tr><th style="width:60px; text-align:center;">Sumur</th><th>ID Sampel</th><th data-tip="Perkiraan ukuran berdasarkan posisi vs ladder">Ukuran Pita (bp)</th><th>Intensitas Pita</th><th style="width:36px;"></th></tr></thead>
+            <tbody id="gelBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addGelRow()">+ Tambah Sumur</button>
+      </div>
+    </div>
+
+    <div id="v-logbook" class="tab-pane">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Logbook Penelitian</div>
+          <div class="page-desc">Catatan harian aktivitas dan observasi laboratorium (tersimpan di Local Storage).</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-danger-soft btn-sm" onclick="clearLogbook()">🗑️ Reset Semua</button>
+          <button class="btn btn-success btn-sm" onclick="exportCSV('logbookTable', 'Logbook_Penelitian.csv')">📥 Unduh CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="logbookTable">
+          <thead><tr>
+            <th style="width:40px; text-align:center;">#</th>
+            <th style="width:130px;">Tanggal</th>
+            <th style="width:100px;">Waktu</th>
+            <th style="text-align:left;">Aktivitas / Parameter</th>
+            <th style="text-align:left;">Hasil / Observasi</th>
+            <th style="text-align:left;">Catatan / Tindakan</th>
+            <th style="width:36px;"></th>
+          </tr></thead>
+          <tbody id="logbookBody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="addLogbookRow()">+ Tambah Catatan</button>
+    </div>
+
+    <div id="v-inv" class="tab-pane">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Inventaris Reagen Lab</div>
+          <div class="page-desc">Stok tersimpan otomatis di Local Storage perangkat Anda.</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-danger-soft btn-sm" onclick="clearInventory()">🗑️ Reset Semua</button>
+          <button class="btn btn-success btn-sm" onclick="exportCSV('invTable', 'Inventaris_Lab.csv')">📥 Unduh CSV</button>
+        </div>
+      </div>
+      <div class="info-box info" style="margin-bottom:16px;">
+        Kolom <strong>Sisa Stok</strong> berwarna <span style="color:var(--danger)">merah</span> jika ≤ 10 unit (perlu reorder). Klik sel mana saja untuk mengedit langsung.
+      </div>
+      <div class="table-wrap">
+        <table id="invTable">
+          <thead><tr>
+            <th style="width:40px; text-align:center;">#</th>
+            <th style="text-align:left;">Nama Item / Reagen</th>
+            <th>Kategori</th>
+            <th data-tip="Merah jika ≤ 10 unit">Sisa Stok</th>
+            <th>Satuan</th>
+            <th>Suhu Simpan</th>
+            <th style="width:36px;"></th>
+          </tr></thead>
+          <tbody id="invBody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="addInvRow()">+ Tambah Item</button>
+    </div>
+
+    <div id="v-needs" class="tab-pane">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Kebutuhan & Jadwal Lab</div>
+          <div class="page-desc">Permintaan bahan habis pakai dan booking alat laboratorium.</div>
+        </div>
+      </div>
+
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="openSub(this, 'lab-req', 'lab-group')">📋 Daftar Permintaan</button>
+        <button class="sub-btn" onclick="openSub(this, 'lab-book', 'lab-group')">📅 Jadwal Booking Alat</button>
+      </div>
+
+      <div id="lab-req" class="sub-pane lab-group active">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;">
+          <button class="btn btn-success btn-sm" onclick="exportCSV('reqTable', 'Request_Bahan.csv')">📥 Ekspor CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table id="reqTable">
+            <thead><tr>
+              <th style="width:36px; text-align:center;">#</th>
+              <th style="text-align:left;">Nama Bahan / Reagen</th>
+              <th>Jumlah</th>
+              <th>Urgensi</th>
+              <th>Status</th>
+              <th style="width:36px;"></th>
+            </tr></thead>
+            <tbody id="reqBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addReqRow()">+ Tambah Request</button>
+      </div>
+
+      <div id="lab-book" class="sub-pane lab-group">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;">
+          <button class="btn btn-success btn-sm" onclick="exportCSV('bookTable', 'Jadwal_Alat.csv')">📥 Ekspor CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table id="bookTable">
+            <thead><tr>
+              <th style="width:36px; text-align:center;">#</th>
+              <th style="text-align:left;">Nama Alat</th>
+              <th>Tanggal Pakai</th>
+              <th>Jam Pakai</th>
+              <th>Pengguna</th>
+              <th>Status Alat</th>
+              <th style="width:36px;"></th>
+            </tr></thead>
+            <tbody id="bookBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addBookRow()">+ Tambah Jadwal</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="overlay" id="dlgHelp">
+  <div class="dialog" style="width:580px; max-height:85vh; display:flex; flex-direction:column;">
+    <div class="dialog-header">📐 Panduan Formula & Validasi <button class="btn-icon" onclick="closeDialog('dlgHelp')" style="font-size:18px;">×</button></div>
+    <div class="dialog-body" style="overflow-y:auto; flex:1; gap:0;">
+      
+      <div class="section-label">In Vivo — Performa Budidaya</div>
+      <div class="legend" style="border:none; background:transparent;">
+        <strong>SR</strong> = (Nt / N0) × 100 (%)<br>
+        <strong>ADG</strong> = (Wt − W0) / t (g/hari)<br>
+        <strong>SGR</strong> = [(ln Wt − ln W0) / t] × 100 (%/hari)<br>
+        <strong>FCR</strong> = F / (Wt×Nt − W0×N0)<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref: Lugert, V. et al. (2016). "A review on fish growth calculation...". Reviews in Aquaculture. <a href="https://doi.org/10.1111/raq.12099" target="_blank" style="color:var(--primary)">doi:10.1111/raq.12099</a></em></span>
+      </div>
+      
+      <div class="section-label">EWS Kualitas Air — Toksisitas Amonia</div>
+      <div class="legend" style="border:none; background:transparent;">
+        <strong>NH₃ bebas</strong> = TAN × fraksi(pH, T°C)<br> 
+        dimana fraksi = 1 / (1 + 10^(pKa − pH)) dan pKa = 0.09018 + 2729.92 / (T+273.15).<br>
+        Batas aman letal: <strong>≤ 0.02 mg/L</strong>.<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref: Emerson, K. et al. (1975). "Aqueous ammonia equilibrium calculations...". J. Fish. Res. Bd. Can. <a href="https://doi.org/10.1139/f75-274" target="_blank" style="color:var(--primary)">doi:10.1139/f75-274</a></em></span>
+      </div>
+      
+      <div class="section-label">TPC — Mikrobiologi</div>
+      <div class="legend" style="border:none; background:transparent;">
+        <strong>TPC</strong> = (Σ koloni / vol plating mL) × 10<sup>faktor pengenceran</sup> (CFU/mL).<br>
+        Rentang valid statistik: 30–300 koloni per cawan. Di luar rentang → tandai TFTC/TNTC.<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref: Sutton, S. (2011). "Accuracy of plate counts". Journal of Validation Technology, 17(3), 42-46.</em></span>
+      </div>
+      
+      <div class="section-label">Biokinetika — Kinetika Fase Log</div>
+      <div class="legend" style="border:none; background:transparent;">
+        <strong>Laju Spesifik (µ)</strong> = (ln OD₂ − ln OD₁) / (t₂ − t₁) (jam⁻¹)<br>
+        <strong>Waktu Generasi (td)</strong> = ln(2) / µ = 0.693 / µ (jam)<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref: Widdel, F. (2007). "Theory and measurement of bacterial growth". Grundpraktikum Mikrobiologie.</em></span>
+      </div>
+      
+      <div class="section-label">Zona Hambat — Uji Antagonis</div>
+      <div class="legend" style="border:none; background:transparent;">
+        <strong>Lebar zona hambatan asli</strong> = (Ø total − Ø sumuran) / 2 (mm)<br>
+        Kategori Davis & Stout (1971): &lt;5=Lemah · 5–10=Sedang · 10–20=Kuat · &gt;20=Sangat Kuat.<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref: Davis, W.W., & Stout, T.R. (1971). "Disc plate method...". Applied Microbiology. <a href="https://doi.org/10.1128/am.22.4.659-665.1971" target="_blank" style="color:var(--primary)">doi:10.1128/am.22.4.659-665.1971</a></em></span>
+      </div>
+      
+      <div class="section-label">Primer PCR — Kalkulasi Tm</div>
+      <div class="legend" style="border:none; background:transparent;">
+        Primer pendek (&lt;14 nt): Tm = 2(A+T) + 4(G+C) °C<br>
+        Primer panjang (≥14 nt): Tm = 64.9 + 41×(G+C−16.4) / panjang °C<br>
+        <strong>Ta optimal</strong> = Tm terkecil − 5 °C.<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref: SantaLucia, J. (1998). "A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics". PNAS. <a href="https://doi.org/10.1073/pnas.95.4.1460" target="_blank" style="color:var(--primary)">doi:10.1073/pnas.95.4.1460</a></em></span>
+      </div>
+
+    </div>
+    <div class="dialog-footer"><button class="btn btn-primary btn-sm" onclick="closeDialog('dlgHelp')">Tutup</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="dlgSpss">
+  <div class="dialog">
+    <div class="dialog-header">📊 Ekspor untuk SPSS</div>
+    <div class="dialog-body">
+      <div class="info-box success">File CSV berhasil diunduh.</div>
+      <p style="font-size:13px; color:var(--text2); line-height:1.7;">
+        <strong>Langkah impor di IBM SPSS:</strong><br>
+        1. File → Import Data → CSV Data<br>
+        2. Pastikan kolom <em>Perlakuan</em> diatur sebagai <strong>Nominal</strong><br>
+        3. Kolom numerik (SR, ADG, SGR, FCR) diatur sebagai <strong>Scale</strong>
+      </p>
+    </div>
+    <div class="dialog-footer"><button class="btn btn-primary btn-sm" onclick="closeDialog('dlgSpss')">Mengerti</button></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ===================================================================
+// UTILITIES
+// ===================================================================
+function switchView(viewId, el) {
+  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  el.classList.add('active');
+  if(viewId === 'v-inv') loadInventory();
+  if(viewId === 'v-needs') loadNeeds();
+  if(viewId === 'v-logbook') loadLogbook();
+}
+function openSub(btn, id, grp) {
+  const pane = btn.closest('.tab-pane');
+  pane.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+  pane.querySelectorAll('.'+grp).forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+function toggleTheme() {
+  const h = document.documentElement;
+  const btn = document.getElementById('theme-btn');
+  if (h.getAttribute('data-theme') === 'dark') {
+      h.setAttribute('data-theme', 'light');
+      if (btn) btn.textContent = '🌙 Mode Gelap';
+  } else {
+      h.setAttribute('data-theme', 'dark');
+      if (btn) btn.textContent = '☀️ Mode Terang';
+  }
+}
+function showHelp() { openDialog('dlgHelp'); }
+function openDialog(id) { document.getElementById(id).classList.add('active'); }
+function closeDialog(id) { document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', function(e) { if(e.target===this) this.classList.remove('active'); }));
+
+function toast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  const colors = { success: 'var(--success)', danger: 'var(--danger)', info: 'var(--primary)', warning: 'var(--warning)' };
+  t.innerHTML = `<span style="color:${colors[type]||colors.info}; font-size:16px;">${type==='success'?'✓':type==='danger'?'✕':'ℹ'}</span> ${msg}`;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+function makeDel(fn) {
+  const b = document.createElement('button');
+  b.className = 'btn-icon'; b.innerHTML = '×'; b.title = 'Hapus baris';
+  b.onclick = fn; return b;
+}
+
+// ===================================================================
+// 1. IN VIVO
+// ===================================================================
+function addInvivoRow() {
+  const tb = document.getElementById('invivoBody');
+  const isFirst = tb.rows.length === 0;
+  const tr = tb.insertRow();
+  tr.innerHTML = `
+    <td><input class="cell-input text-left v-trt" placeholder="${isFirst ? 'Cth: P1' : ''}"></td>
+    <td><input class="cell-input v-wad" placeholder="${isFirst ? 'Cth: U1' : ''}"></td>
+    <td><input type="number" class="cell-input v-w0" oninput="calcInvivo(this)"></td>
+    <td><input type="number" class="cell-input v-wt" oninput="calcInvivo(this)"></td>
+    <td><input type="number" class="cell-input v-n0" oninput="calcInvivo(this)"></td>
+    <td><input type="number" class="cell-input v-nt" oninput="calcInvivo(this)"></td>
+    <td><input type="number" class="cell-input v-f" oninput="calcInvivo(this)"></td>
+    <td><input type="number" class="cell-input v-t" oninput="calcInvivo(this)"></td>
+    <td class="res-sr val-dim">—</td>
+    <td class="res-adg val-dim">—</td>
+    <td class="res-sgr val-dim">—</td>
+    <td class="res-fcr val-dim">—</td>
+    <td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris ini?')) { tr.remove(); } }));
+}
+
+function calcInvivo(input) {
+  const r = input.closest('tr');
+  const w0 = parseFloat(r.querySelector('.v-w0').value)||0;
+  const wt = parseFloat(r.querySelector('.v-wt').value)||0;
+  const n0 = parseFloat(r.querySelector('.v-n0').value)||0;
+  const nt = parseFloat(r.querySelector('.v-nt').value)||0;
+  const f  = parseFloat(r.querySelector('.v-f').value)||0;
+  const t  = parseFloat(r.querySelector('.v-t').value)||0;
+
+  const srEl  = r.querySelector('.res-sr');
+  const adgEl = r.querySelector('.res-adg');
+  const sgrEl = r.querySelector('.res-sgr');
+  const fcrEl = r.querySelector('.res-fcr');
+
+  // SR
+  if(n0 > 0 && r.querySelector('.v-nt').value !== '') {
+    if(nt > n0) { srEl.innerHTML = '<span class="badge badge-warning">Nt > N0?</span>'; }
+    else { const sr=(nt/n0)*100; srEl.className='res-sr val-num'; srEl.textContent=sr.toFixed(1)+'%'; applyColor(srEl,sr,80,60); }
+  } else { srEl.className='res-sr val-dim'; srEl.textContent='—'; }
+
+  // ADG
+  if(t > 0 && wt > 0 && w0 > 0) {
+    const adg=(wt-w0)/t; adgEl.className='res-adg val-num'; adgEl.textContent=adg.toFixed(3);
+  } else { adgEl.className='res-adg val-dim'; adgEl.textContent='—'; }
+
+  // SGR — harus pakai bobot individu rata-rata, bukan biomassa
+  if(t > 0 && w0 > 0 && wt > 0) {
+    if(wt <= w0) { sgrEl.innerHTML = '<span class="badge badge-warning">Wt ≤ W0</span>'; }
+    else { const sgr=((Math.log(wt)-Math.log(w0))/t)*100; sgrEl.className='res-sgr val-num'; sgrEl.textContent=sgr.toFixed(3); }
+  } else { sgrEl.className='res-sgr val-dim'; sgrEl.textContent='—'; }
+
+  // FCR — berbasis perubahan biomassa BUKAN bobot individu
+  const dBiomassa = (wt*nt) - (w0*n0);
+  if(dBiomassa > 0 && f > 0) {
+    const fcr = f / dBiomassa; fcrEl.className='res-fcr val-num'; fcrEl.textContent=fcr.toFixed(2);
+    if(fcr <= 2.0) fcrEl.style.color='var(--success)'; else if(fcr<=3.0) fcrEl.style.color='var(--warning)'; else fcrEl.style.color='var(--danger)';
+  } else { fcrEl.className='res-fcr val-dim'; fcrEl.style.color=''; fcrEl.textContent='—'; }
+}
+
+function applyColor(el, val, goodThreshold, warnThreshold) {
+  if(val >= goodThreshold) el.style.color='var(--success)';
+  else if(val >= warnThreshold) el.style.color='var(--warning)';
+  else el.style.color='var(--danger)';
+}
+
+function showInvivoGuide() { openDialog('dlgHelp'); }
+
+function exportSPSS() {
+  exportCSV('invivoTable', 'Data_SPSS_InVivo.csv');
+  setTimeout(() => openDialog('dlgSpss'), 300);
+}
+
+// ===================================================================
+// 2. WATER QUALITY (NH₃ terionisasi)
+// ===================================================================
+function addWaterRow() {
+  const tb = document.getElementById('waterBody');
+  const isFirst = tb.rows.length === 0;
+  const tr = tb.insertRow();
+  tr.innerHTML = `
+    <td><input type="number" class="cell-input w-day" value="${tb.rows.length + 1}" oninput="evalWater()"></td>
+    <td><input type="number" class="cell-input w-temp" placeholder="${isFirst ? 'Cth: 28' : ''}" step="0.1" oninput="evalWater()"></td>
+    <td><input type="number" class="cell-input w-ph" placeholder="${isFirst ? 'Cth: 7.0' : ''}" step="0.1" oninput="evalWater()"></td>
+    <td><input type="number" class="cell-input w-do" placeholder="${isFirst ? 'Cth: 6.0' : ''}" step="0.1" oninput="evalWater()"></td>
+    <td><input type="number" class="cell-input w-tan" placeholder="${isFirst ? 'Cth: 0.10' : ''}" step="0.01" oninput="evalWater()"></td>
+    <td class="w-nh3 val-dim">—</td>
+    <td class="w-status val-dim">—</td>
+    <td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris ini?')) { tr.remove(); evalWater(); } }));
+}
+
+// Hitung fraksi NH3 dari TAN (Emerson et al. 1975)
+function calcNH3(tan, pH, tempC) {
+  const pKa = 0.09018 + 2729.92 / (tempC + 273.15);
+  const frac = 1 / (1 + Math.pow(10, pKa - pH));
+  return tan * frac;
+}
+
+function evalWater() {
+  let amoniaHist = [], latest = null, hasValid = false;
+  document.querySelectorAll('#waterBody tr').forEach(r => {
+    const ts=r.querySelector('.w-temp').value, ps=r.querySelector('.w-ph').value,
+          ds=r.querySelector('.w-do').value, ns=r.querySelector('.w-tan').value;
+    const nh3El=r.querySelector('.w-nh3'), scEl=r.querySelector('.w-status');
+    if(!ts||!ps||!ds||!ns){ nh3El.innerHTML='—'; nh3El.className='w-nh3 val-dim'; scEl.innerHTML='<span class="badge badge-neutral">Belum Lengkap</span>'; return; }
+    const t=parseFloat(ts), p=parseFloat(ps), d=parseFloat(ds), n=parseFloat(ns);
+    const nh3 = calcNH3(n, p, t);
+    nh3El.className='w-nh3 val-num'; nh3El.textContent=nh3.toFixed(4);
+    if(nh3>0.02) nh3El.style.color='var(--danger)'; else if(nh3>0.01) nh3El.style.color='var(--warning)'; else nh3El.style.color='var(--success)';
+    amoniaHist.push({tan:n,nh3}); latest={t,p,d,n,nh3}; hasValid=true;
+
+    // Evaluasi status multi-parameter
+    let isCrit = (nh3>=0.02 || p>=8.5 || p<=6.0 || d<=3.0 || t>=34 || t<=22 || n>=0.5);
+    let isWarn = (nh3>=0.01 || n>=0.3 || (p>8.0&&p<8.5)||(p>6.0&&p<6.8)||d<=4.5||t>=32||t<=25);
+    if(isCrit) scEl.innerHTML='<span class="badge badge-danger">⚠ Kritis</span>';
+    else if(isWarn) scEl.innerHTML='<span class="badge badge-warning">Waspada</span>';
+    else scEl.innerHTML='<span class="badge badge-success">Optimal</span>';
+  });
+
+  const pnl = document.getElementById('ewsPanel');
+  if(!hasValid||!latest) {
+    pnl.style.borderLeftColor='var(--text3)';
+    pnl.innerHTML='<strong style="color:var(--primary);">🔎 Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:12px;">Lengkapi data harian untuk mengaktifkan analisis toksisitas amonia.</span>';
+    return;
+  }
+
+  let adv='Parameter berada dalam rentang aman.', bColor='var(--success)', icon='✅';
+  if(latest.nh3>=0.02 && latest.p>8.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>NH₃ bebas toksik di kondisi basa.</strong> Ganti air 20–30%, turunkan pH perlahan.'; }
+  else if(latest.nh3>=0.02) { bColor='var(--danger)'; icon='🚨'; adv='<strong>NH₃ bebas melebihi 0.02 mg/L.</strong> Ganti air segera, kurangi feeding rate.'; }
+  else if(latest.p<=6.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>pH terlalu asam.</strong> Aplikasikan kapur dolomit secara bertahap.'; }
+  else if(latest.d<=3.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>DO sangat rendah.</strong> Aktifkan semua aerator, kurangi kepadatan sementara.'; }
+  else if(latest.nh3>=0.01) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>NH₃ mendekati batas aman.</strong> Kurangi pakan 20%, pantau setiap 4 jam.'; }
+  else if(latest.d<=4.5) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>DO rendah.</strong> Tambah aerasi, hindari overfeeding.'; }
+
+  let predText = '';
+  if(amoniaHist.length >= 3) {
+    const vals = amoniaHist.map(a => a.tan);
+    let diffs = 0; for(let i=1;i<vals.length;i++) diffs += vals[i]-vals[i-1];
+    const trend = diffs/(vals.length-1);
+    const predTan = Math.max(0, latest.n + trend);
+    const predNH3 = calcNH3(predTan, latest.p, latest.t);
+    predText = `<br><span style="font-size:12px; color:var(--text3);">📈 Prediksi TAN besok ≈ <strong style="color:var(--text)">${predTan.toFixed(3)} ppm</strong> · NH₃ ≈ <strong style="color:${predNH3>=0.02?'var(--danger)':predNH3>=0.01?'var(--warning)':'var(--success)'}">${predNH3.toFixed(4)} mg/L</strong></span>`;
+  }
+
+  pnl.style.borderLeftColor = bColor;
+  pnl.innerHTML = `<strong style="color:var(--primary);">Dashboard Analitik & Rekomendasi</strong><br>${icon} ${adv}${predText}`;
+}
+
+// ===================================================================
+// 3. MICROBIOLOGY
+// ===================================================================
+function formatSci(n) {
+  if(n===0) return '0';
+  const e = Math.floor(Math.log10(n)), m = n/Math.pow(10,e);
+  return `${m.toFixed(2)} × 10<sup>${e}</sup>`;
+}
+
+function addTpcRow() {
+  const tb = document.getElementById('tpcBody');
+  const isFirst = tb.rows.length === 0;
+  const tr = tb.insertRow();
+  tr.innerHTML = `
+    <td><input class="cell-input text-left" placeholder="${isFirst ? 'Cth: Isolat A' : ''}"></td>
+    <td><input type="number" class="cell-input m-k" oninput="cTpc(this)"></td>
+    <td><input type="number" class="cell-input m-f" oninput="cTpc(this)"></td>
+    <td><input type="number" class="cell-input m-v" step="0.05" oninput="cTpc(this)"></td>
+    <td class="res-tpc sci-not">—</td>
+    <td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris ini?')) tr.remove(); }));
+}
+
+function cTpc(i) {
+  const r = i.closest('tr');
+  const ks=r.querySelector('.m-k').value, fs=r.querySelector('.m-f').value, vs=r.querySelector('.m-v').value;
+  const res = r.querySelector('.res-tpc');
+  if(ks !== "" && fs !== "" && vs !== "") {
+      const k = parseFloat(ks), f = parseFloat(fs), v = parseFloat(vs);
+      if(v > 0) {
+        const tpc = (k/v)*Math.pow(10,f);
+        res.innerHTML = formatSci(tpc);
+        if(k < 30) res.innerHTML += ' <span class="badge badge-warning" style="font-size:10px;">TFTC</span>';
+        else if(k > 300) res.innerHTML += ' <span class="badge badge-warning" style="font-size:10px;">TNTC</span>';
+      } else { res.innerHTML='—'; }
+  } else { res.innerHTML='—'; }
+}
+
+function addOdRow() {
+  const tb = document.getElementById('odBody');
+  const isFirst = tb.rows.length === 0;
+  const tr = tb.insertRow();
+  tr.innerHTML = `
+    <td><input class="cell-input text-left" placeholder="${isFirst ? 'Cth: Isolat B' : ''}"></td>
+    <td><input type="number" class="cell-input o-od" step="0.01" oninput="cOd(this)"></td>
+    <td><input type="number" class="cell-input o-fc" step="1e7" oninput="cOd(this)"></td>
+    <td class="res-od sci-not">—</td>
+    <td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris ini?')) tr.remove(); }));
+}
+
+function cOd(i) {
+  const r=i.closest('tr'), ods=r.querySelector('.o-od').value, fcs=r.querySelector('.o-fc').value, res=r.querySelector('.res-od');
+  if(ods!=="" && fcs!=="") res.innerHTML=formatSci(parseFloat(ods)*parseFloat(fcs)); else res.innerHTML='—';
+}
+
+function addZonaRow() {
+  const tb = document.getElementById('zonaBody');
+  const isFirst = tb.rows.length === 0;
+  const tr = tb.insertRow();
+  tr.innerHTML = `
+    <td><input class="cell-input text-left" placeholder="${isFirst ? 'Cth: Isolat A vs E. coli' : ''}"></td>
+    <td><input type="number" class="cell-input z-total" step="0.1" oninput="cZ(this)"></td>
+    <td><input type="number" class="cell-input z-disk" step="0.1" oninput="cZ(this)"></td>
+    <td class="res-z val-dim">—</td>
+    <td class="res-zk">—</td>
+    <td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris ini?')) tr.remove(); }));
+}
+
+function cZ(i) {
+  const r=i.closest('tr');
+  const tott=r.querySelector('.z-total').value, dsks=r.querySelector('.z-disk').value;
+  const rl=r.querySelector('.res-z'), rk=r.querySelector('.res-zk');
+  if(tott!=="" && dsks!=="") {
+    const tot=parseFloat(tott), disk=parseFloat(dsks);
+    if(tot < disk) { rl.innerHTML='<span class="badge badge-danger">Error: Total &lt; Disk</span>'; rk.innerHTML='—'; return; }
+    const lebar = (tot - disk) / 2;
+    rl.className='res-z val-num'; rl.textContent=lebar.toFixed(1);
+    if(lebar===0) rk.innerHTML='<span class="badge badge-neutral">Tidak Ada</span>';
+    else if(lebar<5) rk.innerHTML='<span class="badge badge-danger">Lemah</span>';
+    else if(lebar<=10) rk.innerHTML='<span class="badge badge-warning">Sedang</span>';
+    else if(lebar<=20) rk.innerHTML='<span class="badge badge-success">Kuat</span>';
+    else rk.innerHTML='<span class="badge badge-purple">Sangat Kuat</span>';
+  } else { rl.innerHTML='—'; rk.innerHTML='—'; }
+}
+
+function calcKinetika() {
+  const t1s=document.getElementById('bioT1').value, od1s=document.getElementById('bioOd1').value;
+  const t2s=document.getElementById('bioT2').value, od2s=document.getElementById('bioOd2').value;
+  const rMu=document.getElementById('resMu'), rGen=document.getElementById('resGen'), alert=document.getElementById('kinetikaAlert');
+  alert.style.display='none';
+  if(t1s!=="" && od1s!=="" && t2s!=="" && od2s!=="") {
+    const t1=parseFloat(t1s), od1=parseFloat(od1s), t2=parseFloat(t2s), od2=parseFloat(od2s);
+    if(t2<=t1) { alert.style.display='block'; alert.textContent='⚠ t₂ harus lebih besar dari t₁.'; rMu.textContent='—'; rGen.textContent='—'; return; }
+    if(od1<=0||od2<=0) { alert.style.display='block'; alert.textContent='⚠ OD harus > 0.'; rMu.textContent='—'; rGen.textContent='—'; return; }
+    if(od2<=od1) { alert.style.display='block'; alert.textContent='⚠ OD₂ ≤ OD₁: bukan fase log. Periksa data.'; rMu.textContent='—'; rGen.textContent='—'; return; }
+    const mu=(Math.log(od2)-Math.log(od1))/(t2-t1);
+    rMu.textContent=mu.toFixed(4); rGen.textContent=(0.693147/mu).toFixed(2);
+  } else { rMu.textContent='—'; rGen.textContent='—'; }
+}
+
+// ===================================================================
+// 5. MOLECULAR — PRIMER ANALYSIS
+// ===================================================================
+function cleanSeq(s) { return s.toUpperCase().replace(/[^ATCG]/g,''); }
+function calcTm(seq) {
+  if(!seq||seq.length===0) return null;
+  const g=(seq.match(/G/g)||[]).length, c=(seq.match(/C/g)||[]).length, a=(seq.match(/A/g)||[]).length, t=(seq.match(/T/g)||[]).length;
+  const len=seq.length;
+  return len < 14 ? (a+t)*2+(g+c)*4 : 64.9+41*(g+c-16.4)/len;
+}
+function calcGC(seq) { if(!seq.length) return null; const g=(seq.match(/G/g)||[]).length, c=(seq.match(/C/g)||[]).length; return ((g+c)/seq.length*100); }
+function revComp(seq) { return seq.split('').reverse().map(b=>(b==='A'?'T':b==='T'?'A':b==='C'?'G':'C')).join(''); }
+
+function validatePrimer(seq) {
+  const msgs = [];
+  if(seq.length < 17) msgs.push('Terlalu pendek (&lt;17 nt)');
+  if(seq.length > 28) msgs.push('Terlalu panjang (&gt;28 nt)');
+  const gc = calcGC(seq);
+  if(gc < 40) msgs.push(`GC rendah (${gc.toFixed(0)}%)`);
+  if(gc > 65) msgs.push(`GC tinggi (${gc.toFixed(0)}%)`);
+  const end3 = seq.slice(-5);
+  const gcClamp = (end3.match(/[GC]/g)||[]).length;
+  if(gcClamp < 1) msgs.push("Tidak ada G/C di 3'");
+  if(gcClamp > 3) msgs.push("GC clamp berlebihan (&gt;3 di 3')");
+  return msgs;
+}
+
+function analyzePrimer() {
+  const fwd=cleanSeq(document.getElementById('seqFwd').value);
+  const rev=cleanSeq(document.getElementById('seqRev').value);
+  const tmpl=cleanSeq(document.getElementById('seqTemplate').value);
+
+  ['Fwd','Rev'].forEach((p, pi) => {
+    const seq = pi===0 ? fwd : rev;
+    const tm=calcTm(seq), gc=calcGC(seq);
+    document.getElementById(`res${p}Len`).textContent = seq ? seq.length : '—';
+    document.getElementById(`res${p}Gc`).textContent = gc ? gc.toFixed(1)+'%' : '—';
+    const tmEl = document.getElementById(`res${p}Tm`);
+    if(tm) { tmEl.textContent=tm.toFixed(1)+'°C'; tmEl.style.color = (tm<50||tm>65)?'var(--warning)':'var(--success)'; }
+    else { tmEl.textContent='—'; tmEl.style.color=''; }
+
+    const valEl = document.getElementById(`res${p}Val`);
+    if(seq) {
+      const errs = validatePrimer(seq);
+      if(errs.length===0) valEl.innerHTML='<span class="badge badge-success">✓ OK</span>';
+      else valEl.innerHTML=`<span class="badge badge-warning" title="${errs.join(', ')}">⚠ ${errs.length} catatan</span>`;
+    } else { valEl.innerHTML='—'; }
+  });
+
+  const tmF=calcTm(fwd), tmR=calcTm(rev);
+  const dtEl=document.getElementById('resDeltaTm');
+  if(tmF&&tmR) {
+    const dt=Math.abs(tmF-tmR);
+    dtEl.textContent=dt.toFixed(1)+'°C';
+    dtEl.style.color = dt>5?'var(--warning)':'var(--success)';
+  } else { dtEl.textContent='—'; dtEl.style.color=''; }
+
+  const psEl=document.getElementById('resProdSize');
+  let pSizeVal=null;
+  if(fwd&&rev&&tmpl) {
+    const start=tmpl.indexOf(fwd), end=tmpl.indexOf(revComp(rev));
+    if(start!==-1&&end!==-1&&end>start) { pSizeVal=end+rev.length-start; psEl.textContent=pSizeVal+' bp'; psEl.style.color='var(--success)'; }
+    else { psEl.textContent='⚠ Mismatch / tidak ditemukan'; psEl.style.color='var(--warning)'; }
+  } else if(fwd&&rev) { psEl.textContent='Masukkan template untuk estimasi'; psEl.style.color='var(--text3)'; }
+  else { psEl.textContent='—'; psEl.style.color=''; }
+
+  const taEl=document.getElementById('resAnnealing'), extEl=document.getElementById('resExtension');
+  const pAlert=document.getElementById('primerAlert');
+  pAlert.style.display='none';
+  if(tmF&&tmR) {
+    const minTm=Math.min(tmF,tmR);
+    const ta=(minTm-5).toFixed(1);
+    taEl.textContent=ta+' °C · 30 detik';
+    if(parseFloat(ta)<45) { pAlert.style.display='block'; pAlert.className='info-box warning'; pAlert.textContent='⚠ Ta < 45°C: risiko non-spesifik tinggi. Pertimbangkan redesain primer.'; }
+  } else { taEl.textContent='—'; }
+  if(pSizeVal) extEl.textContent=Math.max(30,Math.ceil((pSizeVal/1000)*60))+' detik';
+  else if(fwd&&rev) extEl.textContent='30–60 detik (estimasi)';
+  else extEl.textContent='—';
+}
+
+// ===================================================================
+// 6. PCR MASTER MIX
+// ===================================================================
+function updateTemplateVol() {
+  document.getElementById('tblTemplateVol').value = document.getElementById('pcrTemplateVol').value;
+  calcPCR(); 
+}
+
+function calcPCR() {
+  const spls = document.getElementById('pcrSamples').value;
+  const spl = parseFloat(spls)||0;
+  const ids=['vWater','vMix','vFwd','vRev'];
+  const pcrEls=document.querySelectorAll('.res-pcr');
+  const ovrEls=document.querySelectorAll('.res-pcr-ov');
+  
+  let totalMix = 0;
+  let hasAnyInput = false;
+
+  ids.forEach((id,i) => {
+    const valStr = document.getElementById(id).value;
+    const v = parseFloat(valStr)||0;
+    if(valStr !== "") hasAnyInput = true;
+    totalMix += v;
+
+    pcrEls[i].textContent=(spls!==""&&valStr!=="")?(v*spl).toFixed(1):'—';
+    ovrEls[i].textContent=(spls!==""&&valStr!=="")?(v*spl*1.1).toFixed(1):'—';
+  });
+
+  const singleEl = document.getElementById('mixTotalSingle');
+  const totalEl = document.getElementById('mixTotalN');
+  const ovEl = document.getElementById('mixTotalNov');
+
+  if (hasAnyInput) {
+      singleEl.textContent = totalMix.toFixed(1) + ' µL';
+      totalEl.textContent = spls!=="" ? (totalMix*spl).toFixed(1) + ' µL' : '—';
+      ovEl.textContent = spls!=="" ? (totalMix*spl*1.1).toFixed(1) + ' µL' : '—';
+  } else {
+      singleEl.textContent = '—';
+      totalEl.textContent = '—';
+      ovEl.textContent = '—';
+  }
+
+  validateMixWarning(totalMix, hasAnyInput);
+}
+
+function validateMixWarning(totalMix, hasAnyInput) {
+  const targetTotalStr = document.getElementById('pcrTargetVol').value;
+  const templateVolStr = document.getElementById('pcrTemplateVol').value;
+  
+  const al=document.getElementById('mixAlert');
+
+  if(targetTotalStr !== "" && templateVolStr !== "" && hasAnyInput) {
+      const targetTotal = parseFloat(targetTotalStr);
+      const templateVol = parseFloat(templateVolStr);
+      const expectedMix = targetTotal - templateVol;
+
+      if(Math.abs(totalMix - expectedMix) > 0.1) { 
+        al.style.display='block';
+        let diff = totalMix - expectedMix;
+        let statusText = diff > 0 ? `Kelebihan ${diff.toFixed(1)} µL` : `Kurang ${Math.abs(diff).toFixed(1)} µL`;
+        al.innerHTML = `⚠ Total komponen mix Anda = <strong>${totalMix.toFixed(1)} µL</strong> (Target Master Mix seharusnya = <strong>${expectedMix.toFixed(1)} µL</strong> <span style="color:var(--danger); font-weight:bold;">[${statusText}]</span> agar Total Reaksi pas di ${targetTotal} µL).`; 
+      } else { 
+        al.style.display='none'; 
+      }
+  } else {
+      al.style.display='none';
+  }
+}
+
+// ===================================================================
+// 7. GEL ELECTROPHORESIS
+// ===================================================================
+function addGelRow() {
+  const tb=document.getElementById('gelBody');
+  const isFirst = tb.rows.length === 0;
+  const tr=tb.insertRow();
+  const w=parseInt(tb.rows.length);
+  tr.innerHTML=`
+    <td style="text-align:center; padding:8px;">${w===0?'M (Marker)':'W'+w}</td>
+    <td><input class="cell-input text-left" placeholder="${isFirst ? 'Cth: Sampel 1' : ''}"></td>
+    <td><input type="number" class="cell-input" placeholder="${isFirst ? 'Cth: 650' : ''}"></td>
+    <td>
+      <select class="cell-select">
+        <option>— Tidak Muncul</option>
+        <option>Lemah / Smear</option>
+        <option>Terang / Tajam</option>
+        <option>Doublet / Ganda</option>
+      </select>
+    </td>
+    <td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus sumur ini?')) tr.remove(); }));
+}
+
+function exportGelCSV() {
+  exportCSV('gelTable', 'Gel_Log.csv');
+  toast('Log elektroforesis diunduh.');
+}
+
+// ===================================================================
+// 8. LOGBOOK (NEW)
+// ===================================================================
+function loadLogbook() {
+  const tb=document.getElementById('logbookBody'); tb.innerHTML='';
+  const data=JSON.parse(localStorage.getItem('aqualab_logbook'))||[
+    {date: new Date().toISOString().split('T')[0], time: '08:00', act: 'Persiapan alat PCR', obs: 'Alat steril, reagen siap', note: 'Lanjut ke master mix'}
+  ];
+  data.forEach((item,i) => {
+    const tr=tb.insertRow();
+    tr.innerHTML=`
+      <td style="text-align:center; color:var(--text3); font-size:12px;">${i+1}</td>
+      <td><input type="date" class="cell-input l-date" value="${item.date}" onchange="saveLogbook()"></td>
+      <td><input type="time" class="cell-input l-time" value="${item.time}" onchange="saveLogbook()"></td>
+      <td><input type="text" style="text-align:left;" class="cell-input l-act" value="${item.act}" placeholder="${i===0?'Cth: Ekstraksi DNA':''}" onchange="saveLogbook()"></td>
+      <td><input type="text" style="text-align:left;" class="cell-input l-obs" value="${item.obs}" placeholder="${i===0?'Cth: Kemurnian 1.85':''}" onchange="saveLogbook()"></td>
+      <td><input type="text" style="text-align:left;" class="cell-input l-note" value="${item.note}" placeholder="${i===0?'Cth: Lanjut PCR':''}" onchange="saveLogbook()"></td>
+      <td></td>`;
+    tr.cells[tr.cells.length-1].appendChild(makeDel(() => {
+      if(confirm('Hapus catatan ini?')) {
+        const d=JSON.parse(localStorage.getItem('aqualab_logbook'))||[];
+        d.splice(tr.rowIndex-1,1);
+        localStorage.setItem('aqualab_logbook',JSON.stringify(d));
+        loadLogbook();
+      }
+    }));
+  });
+}
+function addLogbookRow() {
+  const d=JSON.parse(localStorage.getItem('aqualab_logbook'))||[];
+  d.push({date: new Date().toISOString().split('T')[0], time: '', act: '', obs: '', note: ''});
+  localStorage.setItem('aqualab_logbook',JSON.stringify(d)); loadLogbook();
+}
+function saveLogbook() {
+  const d=[];
+  document.querySelectorAll('#logbookBody tr').forEach(tr => {
+    d.push({
+      date:tr.querySelector('.l-date').value,
+      time:tr.querySelector('.l-time').value,
+      act:tr.querySelector('.l-act').value,
+      obs:tr.querySelector('.l-obs').value,
+      note:tr.querySelector('.l-note').value
+    });
+  });
+  localStorage.setItem('aqualab_logbook',JSON.stringify(d));
+}
+function clearLogbook() {
+  if(confirm('⚠ Hapus semua data logbook?')) { localStorage.removeItem('aqualab_logbook'); loadLogbook(); toast('Logbook direset.','warning'); }
+}
+
+// ===================================================================
+// 9. INVENTORY
+// ===================================================================
+function loadInventory() {
+  const tb=document.getElementById('invBody'); tb.innerHTML='';
+  const data=JSON.parse(localStorage.getItem('aqualab_inv'))||[
+    {name:'GoTaq Green Master Mix',cat:'Reagen PCR',qty:1000,unit:'µL',temp:'-20°C'}
+  ];
+  data.forEach((item,i) => {
+    const tr=tb.insertRow();
+    const qtyVal = parseFloat(item.qty);
+    const qtyColor= (!isNaN(qtyVal) && qtyVal<=10)?'var(--danger)':(!isNaN(qtyVal) && qtyVal<=50)?'var(--warning)':'var(--success)';
+    tr.innerHTML=`
+      <td style="text-align:center; color:var(--text3); font-size:12px;">${i+1}</td>
+      <td><input type="text" style="text-align:left;" class="cell-input i-name" value="${item.name}" placeholder="${i===0?'Cth: GoTaq Green':''}" onchange="saveInventory()"></td>
+      <td><input type="text" class="cell-input i-cat" value="${item.cat}" placeholder="${i===0?'Cth: Reagen PCR':''}" onchange="saveInventory()"></td>
+      <td><input type="number" class="cell-input i-qty" value="${item.qty}" placeholder="${i===0?'1000':''}" onchange="saveInventory()" style="color:${qtyColor}; font-weight:700;"></td>
+      <td><input type="text" class="cell-input i-unit" value="${item.unit}" placeholder="${i===0?'Cth: µL':''}" onchange="saveInventory()"></td>
+      <td><input type="text" class="cell-input i-temp" value="${item.temp}" placeholder="${i===0?'Cth: -20°C':''}" onchange="saveInventory()"></td>
+      <td></td>`;
+    tr.cells[tr.cells.length-1].appendChild(makeDel(() => {
+      if(confirm('Hapus item ini?')) {
+        const d=JSON.parse(localStorage.getItem('aqualab_inv'))||[];
+        d.splice(tr.rowIndex-1,1);
+        localStorage.setItem('aqualab_inv',JSON.stringify(d));
+        loadInventory();
+      }
+    }));
+  });
+}
+function addInvRow() {
+  const d=JSON.parse(localStorage.getItem('aqualab_inv'))||[];
+  d.push({name:'',cat:'',qty:'',unit:'',temp:''});
+  localStorage.setItem('aqualab_inv',JSON.stringify(d)); loadInventory();
+}
+function saveInventory() {
+  const d=[];
+  document.querySelectorAll('#invBody tr').forEach(tr => {
+    d.push({name:tr.querySelector('.i-name').value,cat:tr.querySelector('.i-cat').value,qty:parseFloat(tr.querySelector('.i-qty').value)||0,unit:tr.querySelector('.i-unit').value,temp:tr.querySelector('.i-temp').value});
+  });
+  localStorage.setItem('aqualab_inv',JSON.stringify(d));
+}
+function clearInventory() {
+  if(confirm('⚠ Hapus semua data inventaris?')) { localStorage.removeItem('aqualab_inv'); loadInventory(); toast('Inventaris direset.','warning'); }
+}
+
+// ===================================================================
+// 10. NEEDS & SCHEDULE
+// ===================================================================
+function loadNeeds() {
+  const reqBody=document.getElementById('reqBody'), bookBody=document.getElementById('bookBody');
+  reqBody.innerHTML=''; bookBody.innerHTML='';
+  
+  const reqData=JSON.parse(localStorage.getItem('aqualab_req'))||[
+    {n:'DNA Extraction Kit',q:'1 Box',urg:'Tinggi',stat:'Menunggu'}
+  ];
+  const bookData=JSON.parse(localStorage.getItem('aqualab_book'))||[
+    {a:'Thermocycler PCR',d:'2026-06-01',t:'08:00 - 12:00',u:'',stat:'Dipesan'}
+  ];
+
+  reqData.forEach((i,x) => {
+    const tr=reqBody.insertRow();
+    tr.innerHTML=`
+      <td style="text-align:center; color:var(--text3); font-size:12px;">${x+1}</td>
+      <td><input type="text" class="cell-input text-left r-n" value="${i.n}" placeholder="${x===0?'Cth: DNA Kit':''}" onchange="saveNeeds()"></td>
+      <td><input type="text" class="cell-input r-q" value="${i.q}" placeholder="${x===0?'Cth: 2 Box':''}" onchange="saveNeeds()"></td>
+      <td>
+        <select class="cell-select r-u" onchange="saveNeeds()">
+          <option ${i.urg==='Rendah'?'selected':''}>Rendah</option>
+          <option ${i.urg==='Sedang'?'selected':''}>Sedang</option>
+          <option ${i.urg==='Tinggi'?'selected':''}>Tinggi</option>
+        </select>
+      </td>
+      <td>
+        <select class="cell-select r-s" onchange="saveNeeds()">
+          <option ${i.stat==='Menunggu'?'selected':''}>Menunggu</option>
+          <option ${i.stat==='Dipesan'?'selected':''}>Dipesan</option>
+          <option ${i.stat==='Selesai'?'selected':''}>Selesai</option>
+        </select>
+      </td>
+      <td></td>`;
+    tr.cells[tr.cells.length-1].appendChild(makeDel(() => {
+      if(confirm('Hapus permintaan ini?')) {
+        const d=JSON.parse(localStorage.getItem('aqualab_req'))||[];
+        d.splice(x,1); localStorage.setItem('aqualab_req',JSON.stringify(d)); loadNeeds();
+      }
+    }));
+  });
+
+  bookData.forEach((i,x) => {
+    const tr=bookBody.insertRow();
+    tr.innerHTML=`
+      <td style="text-align:center; color:var(--text3); font-size:12px;">${x+1}</td>
+      <td><input type="text" class="cell-input text-left b-a" value="${i.a}" placeholder="${x===0?'Cth: Thermocycler':''}" onchange="saveNeeds()"></td>
+      <td><input type="date" class="cell-input b-d" value="${i.d}" onchange="saveNeeds()"></td>
+      <td><input type="text" class="cell-input b-t" value="${i.t}" placeholder="${x===0?'Cth: 08:00 - 12:00':''}" onchange="saveNeeds()"></td>
+      <td><input type="text" class="cell-input b-u" value="${i.u}" placeholder="${x===0?'Cth: Nama Peneliti':''}" onchange="saveNeeds()"></td>
+      <td>
+        <select class="cell-select b-s" onchange="saveNeeds()">
+          <option ${i.stat==='Tersedia'?'selected':''}>Tersedia</option>
+          <option ${i.stat==='Dipesan'?'selected':''}>Dipesan</option>
+          <option ${i.stat==='Maintenance'?'selected':''}>Maintenance</option>
+        </select>
+      </td>
+      <td></td>`;
+    tr.cells[tr.cells.length-1].appendChild(makeDel(() => {
+      if(confirm('Hapus jadwal ini?')) {
+        const d=JSON.parse(localStorage.getItem('aqualab_book'))||[];
+        d.splice(x,1); localStorage.setItem('aqualab_book',JSON.stringify(d)); loadNeeds();
+      }
+    }));
+  });
+}
+function addReqRow() { const d=JSON.parse(localStorage.getItem('aqualab_req'))||[]; d.push({n:'',q:'',urg:'Sedang',stat:'Menunggu'}); localStorage.setItem('aqualab_req',JSON.stringify(d)); loadNeeds(); }
+function addBookRow() { const d=JSON.parse(localStorage.getItem('aqualab_book'))||[]; d.push({a:'',d:'',t:'',u:'',stat:'Tersedia'}); localStorage.setItem('aqualab_book',JSON.stringify(d)); loadNeeds(); }
+function saveNeeds() {
+  const req=[], book=[];
+  document.querySelectorAll('#reqBody tr').forEach(tr => {
+    req.push({n:tr.querySelector('.r-n').value,q:tr.querySelector('.r-q').value,urg:tr.querySelector('.r-u').value,stat:tr.querySelector('.r-s').value});
+  });
+  document.querySelectorAll('#bookBody tr').forEach(tr => {
+    book.push({a:tr.querySelector('.b-a').value,d:tr.querySelector('.b-d').value,t:tr.querySelector('.b-t').value,u:tr.querySelector('.b-u').value,stat:tr.querySelector('.b-s').value});
+  });
+  localStorage.setItem('aqualab_req',JSON.stringify(req));
+  localStorage.setItem('aqualab_book',JSON.stringify(book));
+}
+
+// ===================================================================
+// EXPORT CSV
+// ===================================================================
+function exportCSV(tId, fn) {
+  const table=document.getElementById(tId); if(!table) return;
+  let csv=[];
+  for(let r of table.rows) {
+    if(r.style.display==='none'||!r.cells.length) continue;
+    let row=[];
+    for(let c of r.cells) {
+      if(c.querySelector('button.btn-icon')) continue;
+      let val=c.querySelector('input')?c.querySelector('input').value:c.querySelector('select')?c.querySelector('select').value:c.innerText.trim().replace(/[,\n]/g,' ');
+      row.push('"'+val+'"');
+    }
+    csv.push(row.join(','));
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'}));
+  a.download=fn; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast(`${fn} berhasil diunduh.`);
+}
+
+// ===================================================================
+// INIT
+// ===================================================================
+window.onload = function() {
+  addInvivoRow(); addWaterRow(); addOdRow(); addTpcRow(); addZonaRow(); addGelRow();
+  calcPCR(); updateTemplateVol();
+};
+</script>
+</body>
+</html>
