@@ -122,7 +122,7 @@ tbody tr:hover td { background: var(--surface-hover); }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
 .card { background: var(--surface); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
 .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-family: var(--font-sans); }
-.stat-box { background: var(--bg); border: 1px solid var(--border); padding: 14px 12px; border-radius: 8px; text-align: center; }
+.stat-box { background: var(--bg); border: 1px solid var(--border); padding: 14px 12px; border-radius: 8px; text-align: center; display:flex; flex-direction:column; justify-content:center; }
 .stat-box .stat-label { font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; color: var(--text3); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px; }
 .stat-box .stat-value { font-size: 24px; font-weight: 600; font-family: var(--font-mono); color: var(--text); line-height: 1; }
 .stat-box .stat-unit { font-size: 11px; color: var(--text3); margin-top: 4px; font-family: var(--font-sans); }
@@ -257,33 +257,88 @@ tbody tr:hover td { background: var(--surface-hover); }
 
     <div id="v-kesehatan" class="tab-pane">
       <div class="page-header">
-        <div><div class="page-title">Profil Kesehatan Ikan & Udang</div><div class="page-desc">Analisis klinis darah (Hematologi/Hemolymph) dan deteksi infeksi organ target (TPC Hati).</div></div>
-        <div class="toolbar"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('healthTable', 'SPSS_KesehatanIkan.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('healthTable', 'Kesehatan_Ikan.csv')">📥 Unduh CSV</button></div>
+        <div><div class="page-title">Profil Kesehatan & Tindakan Medis</div><div class="page-desc">Analisis klinis darah dan Dosimetri pemberian bahan kimia/obat secara presisi.</div></div>
       </div>
-      <div class="legend"><strong>Keterangan:</strong> <strong>Eritrosit</strong> = Sel darah merah | <strong>Leukosit</strong> = Sel darah putih | <strong>Gula Darah</strong> = Respons stres primer | <strong>THC</strong> = Total Haemocyte Count (Udang) | <strong>RB</strong> = Respiratory Burst | <strong>PO</strong> = Prophenoloxidase | <strong>TPC Hati</strong> = Infeksi bakteri sistemik.</div>
-      <div class="param-settings">
-          <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER DARAH (IKAN):</span>
-          <label class="param-check"><input type="checkbox" id="chkRbc" checked onchange="toggleHealthColumns()"> Eritrosit</label>
-          <label class="param-check"><input type="checkbox" id="chkWbc" checked onchange="toggleHealthColumns()"> Leukosit</label>
-          <label class="param-check"><input type="checkbox" id="chkHt" checked onchange="toggleHealthColumns()"> Hematokrit</label>
-          <label class="param-check"><input type="checkbox" id="chkHb" checked onchange="toggleHealthColumns()"> Hemoglobin</label>
-          <label class="param-check"><input type="checkbox" id="chkAf" checked onchange="toggleHealthColumns()"> Act. Fagositosis</label>
-          <label class="param-check"><input type="checkbox" id="chkGlu" checked onchange="toggleHealthColumns()"> Gula Darah</label>
-          <label class="param-check"><input type="checkbox" id="chkTpcLiver" checked onchange="toggleHealthColumns()"> TPC Hati</label>
-          <div style="width: 100%; height:1px; background:var(--border); margin: 6px 0;"></div>
-          <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">HEMOLYMPH (UDANG):</span>
-          <label class="param-check"><input type="checkbox" id="chkThc" onchange="toggleHealthColumns()"> THC (Udang)</label>
-          <label class="param-check"><input type="checkbox" id="chkRb" onchange="toggleHealthColumns()"> Resp. Burst (RB)</label>
-          <label class="param-check"><input type="checkbox" id="chkPo" onchange="toggleHealthColumns()"> PO Activity</label>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="openSub(this, 'kes-klinis', 'kes-group')">🩺 Profil Klinis (Darah/Hemolymph)</button>
+        <button class="sub-btn" onclick="openSub(this, 'kes-dosis', 'kes-group')">💊 Tindakan & Dosimetri</button>
       </div>
-      <div id="ewsHealthPanel" class="ews-panel"><strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar (Klinis Imunologi)</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data klinis sampel untuk mengaktifkan diagnosis patologis otomatis.</span></div>
-      <div class="table-wrap">
-        <table id="healthTable">
-          <thead><tr><th style="width:140px; text-align:left;">Sampel Uji</th><th class="col-rbc">Eritrosit (10⁶)</th><th class="col-wbc">Leukosit (10³)</th><th class="col-ht">Ht (%)</th><th class="col-hb">Hb (g/dL)</th><th class="col-af">AF (%)</th><th class="col-glu">Glukosa (mg/dL)</th><th class="col-tpc-liver">TPC Hati (log)</th><th class="col-thc" style="display:none;">THC (10⁶/mL)</th><th class="col-rb" style="display:none;">RB (OD)</th><th class="col-po" style="display:none;">PO (OD/min)</th><th>Status Klinis</th><th style="width:36px;"></th></tr></thead>
-          <tbody id="healthBody"></tbody>
-        </table>
+
+      <div id="kes-klinis" class="sub-pane kes-group active">
+        <div class="toolbar" style="justify-content:flex-end; margin-bottom:12px;">
+            <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('healthTable', 'SPSS_KesehatanIkan.csv')">📊 Ekspor SPSS</button>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('healthTable', 'Kesehatan_Ikan.csv')">📥 Unduh CSV</button>
+        </div>
+        <div class="param-settings">
+            <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER DARAH (IKAN):</span>
+            <label class="param-check"><input type="checkbox" id="chkRbc" checked onchange="toggleHealthColumns()"> Eritrosit</label>
+            <label class="param-check"><input type="checkbox" id="chkWbc" checked onchange="toggleHealthColumns()"> Leukosit</label>
+            <label class="param-check"><input type="checkbox" id="chkHt" checked onchange="toggleHealthColumns()"> Hematokrit</label>
+            <label class="param-check"><input type="checkbox" id="chkHb" checked onchange="toggleHealthColumns()"> Hemoglobin</label>
+            <label class="param-check"><input type="checkbox" id="chkAf" checked onchange="toggleHealthColumns()"> Act. Fagositosis</label>
+            <label class="param-check"><input type="checkbox" id="chkGlu" checked onchange="toggleHealthColumns()"> Gula Darah</label>
+            <label class="param-check"><input type="checkbox" id="chkTpcLiver" checked onchange="toggleHealthColumns()"> TPC Hati</label>
+            <div style="width: 100%; height:1px; background:var(--border); margin: 6px 0;"></div>
+            <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">HEMOLYMPH (UDANG):</span>
+            <label class="param-check"><input type="checkbox" id="chkThc" onchange="toggleHealthColumns()"> THC (Udang)</label>
+            <label class="param-check"><input type="checkbox" id="chkRb" onchange="toggleHealthColumns()"> Resp. Burst (RB)</label>
+            <label class="param-check"><input type="checkbox" id="chkPo" onchange="toggleHealthColumns()"> PO Activity</label>
+        </div>
+        <div id="ewsHealthPanel" class="ews-panel"><strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar (Klinis Imunologi)</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data klinis sampel untuk mengaktifkan diagnosis patologis otomatis.</span></div>
+        <div class="table-wrap">
+          <table id="healthTable">
+            <thead><tr><th style="width:140px; text-align:left;">Sampel Uji</th><th class="col-rbc">Eritrosit (10⁶)</th><th class="col-wbc">Leukosit (10³)</th><th class="col-ht">Ht (%)</th><th class="col-hb">Hb (g/dL)</th><th class="col-af">AF (%)</th><th class="col-glu">Glukosa (mg/dL)</th><th class="col-tpc-liver">TPC Hati (log)</th><th class="col-thc" style="display:none;">THC (10⁶/mL)</th><th class="col-rb" style="display:none;">RB (OD)</th><th class="col-po" style="display:none;">PO (OD/min)</th><th>Status Klinis</th><th style="width:36px;"></th></tr></thead>
+            <tbody id="healthBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addHealthRow()">+ Tambah Data Individu</button>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="addHealthRow()">+ Tambah Data Individu</button>
+
+      <div id="kes-dosis" class="sub-pane kes-group">
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">💊 Kalkulator Dosis Bahan Kimia (Sterilisasi/Pengobatan)</div>
+                <div class="form-group">
+                    <label>Volume Air (Liter/m³)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="doseVol" class="form-control" placeholder="Cth: 1000" oninput="calcDose()">
+                        <select id="doseUnit" class="form-control" style="width:100px;" onchange="calcDose()">
+                            <option value="1">Liter</option>
+                            <option value="1000">m³ (Ton)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Target Konsentrasi (ppm / mg/L)</label>
+                    <input type="number" id="doseTarget" class="form-control" placeholder="Cth: 5 (untuk 5 ppm)" step="0.1" oninput="calcDose()">
+                </div>
+                <div class="form-group">
+                    <label>Jenis Bahan Kimia & Kemurnian (Bahan Aktif)</label>
+                    <div style="display:flex; gap:10px;">
+                        <select id="doseType" class="form-control" onchange="autoFillPurity()">
+                            <option value="custom">Kustom (Input Manual)</option>
+                            <option value="60">Kaporit (Kalsium Hipoklorit 60%)</option>
+                            <option value="100">KMnO4 (PK / Kalium Permanganat 100%)</option>
+                            <option value="37">Formalin (Formaldehida 37%)</option>
+                            <option value="100">Kapur (Kalsium Karbonat 100%)</option>
+                        </select>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <input type="number" id="dosePurity" class="form-control" style="width:70px;" value="100" oninput="calcDose()">
+                            <span style="font-weight:bold; color:var(--text3);">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; margin-bottom:10px;">Kebutuhan Bahan Nyata</div>
+                <div id="doseResult" style="font-family:var(--font-mono); font-size:42px; font-weight:700; color:var(--danger); line-height:1;">0.00</div>
+                <div id="doseResultUnit" style="font-size:14px; font-weight:bold; color:var(--text); margin-top:5px;">Gram / mL</div>
+                <div class="info-box warning" style="margin-top:20px; font-size:12px; text-align:left;">
+                    <strong>Perhatian:</strong> Pastikan Anda melarutkan bahan kimia dengan air wadah secara merata. Dosis bahan aktif yang salah dapat menyebabkan keracunan akut letal pada ikan.
+                </div>
+            </div>
+        </div>
+      </div>
     </div>
 
     <div id="v-gonad" class="tab-pane">
@@ -303,9 +358,13 @@ tbody tr:hover td { background: var(--surface-hover); }
 
     <div id="v-pakan" class="tab-pane">
       <div class="page-header">
-        <div><div class="page-title">Manajemen Nutrisi & Pakan</div><div class="page-desc">Kalkulator program pemberian pakan (Feeding Rate) dan Analisis Proksimat.</div></div>
+        <div><div class="page-title">Manajemen Nutrisi & Pakan</div><div class="page-desc">Kalkulator Feeding Rate, Formulasi Pearson Square, dan Analisis Proksimat.</div></div>
       </div>
-      <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'pakan-harian', 'pakan-group')">🌾 Program Feeding Rate</button><button class="sub-btn" onclick="openSub(this, 'pakan-nutrisi', 'pakan-group')">🧪 Analisis Proksimat Pakan</button></div>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="openSub(this, 'pakan-harian', 'pakan-group')">🌾 Program Feeding Rate</button>
+        <button class="sub-btn" onclick="openSub(this, 'pakan-formulasi', 'pakan-group')">⚖️ Formulasi (Pearson)</button>
+        <button class="sub-btn" onclick="openSub(this, 'pakan-nutrisi', 'pakan-group')">🧪 Analisis Proksimat Pakan</button>
+      </div>
       
       <div id="pakan-harian" class="sub-pane pakan-group active">
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('feedTable', 'SPSS_Feeding.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('feedTable', 'Program_Feeding.csv')">📥 Ekspor CSV</button></div>
@@ -313,8 +372,43 @@ tbody tr:hover td { background: var(--surface-hover); }
         <button class="btn btn-outline btn-sm" onclick="addPakanRow()">+ Tambah Data Feeding</button>
       </div>
 
+      <div id="pakan-formulasi" class="sub-pane pakan-group">
+          <div class="info-box info">Algoritma <strong>Pearson Square</strong> digunakan untuk menyeimbangkan dua jenis bahan baku (Basal & Suplemen) agar mencapai persentase target protein yang diinginkan.</div>
+          <div class="grid-2">
+              <div class="card">
+                  <div class="card-title">🎯 Target Formulasi</div>
+                  <div class="form-group"><label>Target Protein Pakan (%)</label><input type="number" id="pearsonTarget" class="form-control" placeholder="Cth: 30" oninput="calcPearson()"></div>
+                  <div class="form-group"><label>Total Pakan yang Dibuat (Kg)</label><input type="number" id="pearsonTotal" class="form-control" value="1" oninput="calcPearson()"></div>
+              </div>
+              <div class="card">
+                  <div class="card-title">🌾 Ketersediaan Bahan Baku</div>
+                  <div class="grid-2" style="gap:10px;">
+                      <div class="form-group"><label>Nama Bahan Basal (Protein Rendah)</label><input type="text" id="pearsonB1Name" class="form-control" value="Dedak Halus"></div>
+                      <div class="form-group"><label>Protein Bahan Basal (%)</label><input type="number" id="pearsonB1Pct" class="form-control" placeholder="Cth: 10" oninput="calcPearson()"></div>
+                  </div>
+                  <div class="grid-2" style="gap:10px;">
+                      <div class="form-group"><label>Nama Bahan Suplemen (Protein Tinggi)</label><input type="text" id="pearsonB2Name" class="form-control" value="Tepung Ikan"></div>
+                      <div class="form-group"><label>Protein Bahan Suplemen (%)</label><input type="number" id="pearsonB2Pct" class="form-control" placeholder="Cth: 50" oninput="calcPearson()"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="card">
+              <div class="card-title">⚖️ Komposisi Akhir Racikan Pakan</div>
+              <div id="pearsonAlert" class="info-box danger" style="display:none;"></div>
+              <div class="table-wrap">
+                  <table style="text-align:center;">
+                      <thead><tr><th style="text-align:left;">Bahan Baku</th><th>Proporsi (%)</th><th>Kebutuhan Gram (g)</th></tr></thead>
+                      <tbody>
+                          <tr><td id="resPName1" style="text-align:left; font-weight:bold;">Bahan Basal</td><td id="resPPct1" style="font-family:var(--font-mono); color:var(--warning); font-weight:bold;">—</td><td id="resPGram1" style="font-family:var(--font-mono);">—</td></tr>
+                          <tr><td id="resPName2" style="text-align:left; font-weight:bold;">Bahan Suplemen</td><td id="resPPct2" style="font-family:var(--font-mono); color:var(--success); font-weight:bold;">—</td><td id="resPGram2" style="font-family:var(--font-mono);">—</td></tr>
+                          <tr style="background:var(--surface-hover);"><td style="text-align:left; font-weight:bold;">TOTAL</td><td id="resPTotalPct" style="font-family:var(--font-mono); font-weight:bold;">100%</td><td id="resPTotalGram" style="font-family:var(--font-mono); font-weight:bold;">—</td></tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+
       <div id="pakan-nutrisi" class="sub-pane pakan-group">
-        <div class="info-box info"><strong>Analisis Proksimat:</strong> Menghitung kadar <strong>NFE (Nitrogen-Free Extract)</strong> yang mewakili estimasi Karbohidrat tanpa serat.</div>
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('proxTable', 'SPSS_Proksimat.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('proxTable', 'Analisis_Proksimat.csv')">📥 Ekspor CSV</button></div>
         <div class="table-wrap"><table id="proxTable"><thead><tr><th style="text-align:left;">ID Pakan / Merek</th><th>Protein (%)</th><th>Lemak (%)</th><th>Serat Kasar (%)</th><th>Abu (%)</th><th>Kadar Air (%)</th><th>NFE (%)</th><th style="width:36px;"></th></tr></thead><tbody id="proxBody"></tbody></table></div>
         <button class="btn btn-outline btn-sm" onclick="addProksimatRow()">+ Tambah Data Proksimat</button>
@@ -323,7 +417,7 @@ tbody tr:hover td { background: var(--surface-hover); }
 
     <div id="v-water" class="tab-pane">
       <div class="page-header">
-        <div><div class="page-title">EWS Kualitas Air Dinamis</div><div class="page-desc">Evaluasi status lingkungan dan risiko toksisitas secara terintegrasi.</div></div>
+        <div><div class="page-title">EWS Kualitas Air Dinamis</div><div class="page-desc">Evaluasi status lingkungan, rasio C/N Bioflok, dan risiko toksisitas secara terintegrasi.</div></div>
         <div class="toolbar">
           <button class="btn btn-outline btn-sm" id="btnToggleChartWQ" onclick="toggleChartWQ()">📈 Tampilkan Grafik</button>
           <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('waterTable', 'SPSS_KualitasAir.csv')">📊 Ekspor SPSS</button>
@@ -331,46 +425,95 @@ tbody tr:hover td { background: var(--surface-hover); }
         </div>
       </div>
       
-      <div id="chartContainerWQ" class="chart-container" style="display:none;">
-          <canvas id="wqChart" height="100"></canvas>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="openSub(this, 'wq-harian', 'wq-group')">📊 Pemantauan Harian</button>
+        <button class="sub-btn" onclick="openSub(this, 'wq-bioflok', 'wq-group')">🦠 Manajemen Bioflok (C/N Ratio)</button>
       </div>
 
-      <div class="param-settings">
-          <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER AKTIF:</span>
-          <label class="param-check"><input type="checkbox" id="chkTemp" checked onchange="toggleWaterColumns()"> Suhu</label>
-          <label class="param-check"><input type="checkbox" id="chkPh" checked onchange="toggleWaterColumns()"> pH</label>
-          <label class="param-check"><input type="checkbox" id="chkDo" checked onchange="toggleWaterColumns()"> DO</label>
-          <label class="param-check"><input type="checkbox" id="chkTan" checked onchange="toggleWaterColumns()"> Amonia (TAN)</label>
-          <label class="param-check"><input type="checkbox" id="chkAlk" checked onchange="toggleWaterColumns()"> Alkalinitas</label>
-          <label class="param-check"><input type="checkbox" id="chkTds" onchange="toggleWaterColumns()"> TDS</label>
-          <label class="param-check"><input type="checkbox" id="chkKecerahan" onchange="toggleWaterColumns()"> Kecerahan</label>
-          <label class="param-check"><input type="checkbox" id="chkNitrit" onchange="toggleWaterColumns()"> Nitrit</label>
-          <label class="param-check"><input type="checkbox" id="chkNitrat" onchange="toggleWaterColumns()"> Nitrat</label>
-          <label class="param-check"><input type="checkbox" id="chkBod" onchange="toggleWaterColumns()"> BOD</label>
-          <label class="param-check"><input type="checkbox" id="chkTom" onchange="toggleWaterColumns()"> TOM</label>
+      <div id="wq-harian" class="sub-pane wq-group active">
+          <div id="chartContainerWQ" class="chart-container" style="display:none;"><canvas id="wqChart" height="100"></canvas></div>
+
+          <div class="param-settings">
+              <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER AKTIF:</span>
+              <label class="param-check"><input type="checkbox" id="chkTemp" checked onchange="toggleWaterColumns()"> Suhu</label>
+              <label class="param-check"><input type="checkbox" id="chkPh" checked onchange="toggleWaterColumns()"> pH</label>
+              <label class="param-check"><input type="checkbox" id="chkDo" checked onchange="toggleWaterColumns()"> DO</label>
+              <label class="param-check"><input type="checkbox" id="chkTan" checked onchange="toggleWaterColumns()"> Amonia (TAN)</label>
+              <label class="param-check"><input type="checkbox" id="chkAlk" checked onchange="toggleWaterColumns()"> Alkalinitas</label>
+              <label class="param-check"><input type="checkbox" id="chkTds" onchange="toggleWaterColumns()"> TDS</label>
+              <label class="param-check"><input type="checkbox" id="chkKecerahan" onchange="toggleWaterColumns()"> Kecerahan</label>
+              <label class="param-check"><input type="checkbox" id="chkNitrit" onchange="toggleWaterColumns()"> Nitrit</label>
+              <label class="param-check"><input type="checkbox" id="chkNitrat" onchange="toggleWaterColumns()"> Nitrat</label>
+              <label class="param-check"><input type="checkbox" id="chkBod" onchange="toggleWaterColumns()"> BOD</label>
+              <label class="param-check"><input type="checkbox" id="chkTom" onchange="toggleWaterColumns()"> TOM</label>
+          </div>
+          
+          <div id="ewsPanel" class="ews-panel"><strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data harian untuk mengaktifkan analisis kualitas air.</span></div>
+          
+          <div class="table-wrap">
+            <table id="waterTable">
+              <thead>
+                <tr>
+                  <th style="width:50px;">Hari</th>
+                  <th style="min-width:120px;">Keterangan / Waktu</th>
+                  <th class="col-temp">Suhu (°C)</th><th class="col-ph">pH</th><th class="col-do">DO (mg/L)</th>
+                  <th class="col-tan">TAN (ppm)</th><th class="col-tan">NH₃ Bebas</th>
+                  <th class="col-alk">Alkalinitas (mg/L)</th>
+                  <th class="col-tds" style="display:none;">TDS (mg/L)</th><th class="col-kecerahan" style="display:none;">Kecerahan (cm)</th>
+                  <th class="col-nitrit" style="display:none;">Nitrit (ppm)</th><th class="col-nitrat" style="display:none;">Nitrat (ppm)</th>
+                  <th class="col-bod" style="display:none;">BOD (mg/L)</th><th class="col-tom" style="display:none;">TOM (mg/L)</th>
+                  <th>Status</th><th style="width:36px;"></th>
+                </tr>
+              </thead>
+              <tbody id="waterBody"></tbody>
+            </table>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="addWaterRow()">+ Tambah Data Harian</button>
       </div>
-      
-      <div id="ewsPanel" class="ews-panel"><strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data harian untuk mengaktifkan analisis kualitas air.</span></div>
-      
-      <div class="table-wrap">
-        <table id="waterTable">
-          <thead>
-            <tr>
-              <th style="width:50px;">Hari</th>
-              <th style="min-width:120px;">Keterangan / Waktu</th>
-              <th class="col-temp">Suhu (°C)</th><th class="col-ph">pH</th><th class="col-do">DO (mg/L)</th>
-              <th class="col-tan">TAN (ppm)</th><th class="col-tan">NH₃ Bebas</th>
-              <th class="col-alk">Alkalinitas (mg/L)</th>
-              <th class="col-tds" style="display:none;">TDS (mg/L)</th><th class="col-kecerahan" style="display:none;">Kecerahan (cm)</th>
-              <th class="col-nitrit" style="display:none;">Nitrit (ppm)</th><th class="col-nitrat" style="display:none;">Nitrat (ppm)</th>
-              <th class="col-bod" style="display:none;">BOD (mg/L)</th><th class="col-tom" style="display:none;">TOM (mg/L)</th>
-              <th>Status</th><th style="width:36px;"></th>
-            </tr>
-          </thead>
-          <tbody id="waterBody"></tbody>
-        </table>
+
+      <div id="wq-bioflok" class="sub-pane wq-group">
+          <div class="info-box info">Kalkulator ini membantu menentukan dosis penambahan <strong>sumber karbon</strong> (seperti molase/tapioka) untuk menstimulasi bakteri heterotrof dalam asimilasi amonia beracun di sistem bioflok.</div>
+          <div class="grid-2">
+              <div class="card">
+                  <div class="card-title">💧 Data Parameter Wadah</div>
+                  <div class="form-group"><label>Total Ammonia Nitrogen / TAN (mg/L atau ppm)</label><input type="number" id="bfTan" class="form-control" placeholder="Cth: 2.5" step="0.1" oninput="calcBiofloc()"></div>
+                  <div class="form-group">
+                      <label>Volume Air Total (Liter/m³)</label>
+                      <div style="display:flex; gap:10px;">
+                          <input type="number" id="bfVol" class="form-control" placeholder="Cth: 1000" oninput="calcBiofloc()">
+                          <select id="bfUnit" class="form-control" style="width:100px;" onchange="calcBiofloc()">
+                              <option value="1">Liter</option>
+                              <option value="1000">m³ (Ton)</option>
+                          </select>
+                      </div>
+                  </div>
+              </div>
+              <div class="card">
+                  <div class="card-title">🦠 Formulasi Karbon</div>
+                  <div class="form-group"><label>Target Rasio C/N</label><input type="number" id="bfTarget" class="form-control" value="15" oninput="calcBiofloc()"></div>
+                  <div class="form-group">
+                      <label>Sumber Karbon & Kandungan C (%)</label>
+                      <div style="display:flex; gap:10px;">
+                          <select id="bfType" class="form-control" onchange="autoFillCarbon()">
+                              <option value="custom">Kustom (Input Manual)</option>
+                              <option value="40">Molase / Tetes Tebu (~40% C)</option>
+                              <option value="40">Tepung Tapioka (~40% C)</option>
+                              <option value="42">Gula Pasir (~42% C)</option>
+                          </select>
+                          <div style="display:flex; align-items:center; gap:5px;">
+                              <input type="number" id="bfPurity" class="form-control" style="width:70px;" value="40" oninput="calcBiofloc()">
+                              <span style="font-weight:bold; color:var(--text3);">%</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="card" style="text-align:center;">
+              <div style="font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; margin-bottom:10px;">Kebutuhan Penambahan Karbon Nyata</div>
+              <div id="bfResult" style="font-family:var(--font-mono); font-size:42px; font-weight:700; color:var(--primary); line-height:1;">0.00</div>
+              <div style="font-size:14px; font-weight:bold; color:var(--text); margin-top:5px;">Gram</div>
+          </div>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="addWaterRow()">+ Tambah Data Harian</button>
     </div>
 
     <div id="v-plankton" class="tab-pane">
@@ -448,7 +591,7 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div id="mol-mix" class="sub-pane mol-group">
         <div class="card" style="margin-bottom:12px;"><div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;"><label>N Reaksi:</label><input type="number" id="pcrSamples" class="form-control" style="width:70px;" oninput="calcPCR()"><label>Vol Reaksi (µL):</label><input type="number" id="pcrTargetVol" class="form-control" style="width:70px;" value="25" oninput="calcPCR()"><label>Template (µL):</label><input type="number" id="pcrTemplateVol" class="form-control" style="width:70px;" value="2" oninput="updateTemplateVol()"></div></div>
         <div class="table-wrap"><table id="invitroTable"><thead><tr><th>Komponen</th><th>1× (µL)</th><th>n× (µL)</th><th>n× + 10% (µL)</th></tr></thead><tbody><tr><td>ddH₂O</td><td><input type="number" id="vWater" step="0.1" class="cell-input" oninput="calcPCR()"></td><td class="res-pcr">—</td><td class="res-pcr-ov">—</td></tr><tr><td>PCR Master Mix (2×)</td><td><input type="number" id="vMix" step="0.1" class="cell-input" oninput="calcPCR()"></td><td class="res-pcr">—</td><td class="res-pcr-ov">—</td></tr><tr><td>Primer F (10 µM)</td><td><input type="number" id="vFwd" step="0.1" class="cell-input" oninput="calcPCR()"></td><td class="res-pcr">—</td><td class="res-pcr-ov">—</td></tr><tr><td>Primer R (10 µM)</td><td><input type="number" id="vRev" step="0.1" class="cell-input" oninput="calcPCR()"></td><td class="res-pcr">—</td><td class="res-pcr-ov gang">—</td></tr><tr style="background:var(--surface-hover)"><td>Template DNA</td><td><input type="number" id="tblTemplateVol" value="2" disabled class="cell-input" style="opacity:0.5;"></td><td>SDA</td><td>SDA</td></tr><tr style="font-weight:700; background:var(--primary-light)"><td>Total Master Mix</td><td id="mixTotalSingle">—</td><td id="mixTotalN">—</td><td id="mixTotalNov">—</td></tr></tbody></table></div>
-        <div id="mixAlert" style="display:none;" class="info-box warning"></div>
+        <div id="mixAlert" style="display:none;" class="info-box warning" style="margin-top:10px;"></div>
       </div>
 
       <div id="mol-gel" class="sub-pane mol-group">
@@ -492,7 +635,14 @@ tbody tr:hover td { background: var(--surface-hover); }
         <span style="font-size:11px; color:var(--text3);"><em>Referensi: Lugert, V., Thaller, G., Tetens, J., Schulz, C., & Krieter, J. (2016). A review on fish growth calculation: multiple functions in common use, need for a standardized procedure. Reviews in Aquaculture, 8(1), 50-62. <a href="https://doi.org/10.1111/raq.12099" target="_blank" style="color:var(--primary)">doi:10.1111/raq.12099</a></em></span>
       </div>
 
-      <div class="section-label">2. Reproduksi & Pembenihan (Gonad)</div>
+      <div class="section-label">2. Farm Management (Bioflok & Dosimetri Kimia)</div>
+      <div class="legend" style="border:none; background:transparent;">
+        <strong>Kebutuhan Karbon Bioflok (\(\Delta C\))</strong> = TAN (g) \(\times\) Target C/N Ratio. <strong>Dosis Molase/Tapioka (g)</strong> = \(\Delta C\) / (%C Bahan Baku / 100)<br>
+        <strong>Kebutuhan Bahan Kimia (Sterilisasi)</strong> = (Volume Air \(\times\) Target ppm) / (% Kemurnian Aktif) / 1000.<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (Bioflok): Avnimelech, Y. (1999). Carbon/nitrogen ratio as a control element in aquaculture systems. Aquaculture, 176(3-4), 227-235. <a href="https://doi.org/10.1016/S0044-8486(99)00085-X" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(99)00085-X</a></em></span>
+      </div>
+
+      <div class="section-label">3. Reproduksi & Pembenihan (Gonad)</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>GSI (Gonadosomatic Index)</strong> = (Wg / Wt) × 100 (%)<br>
         <strong>HSI (Hepatosomatic Index)</strong> = (Wh / Wt) × 100 (%)<br>
@@ -500,51 +650,42 @@ tbody tr:hover td { background: var(--surface-hover); }
         <span style="font-size:11px; color:var(--text3);"><em>Referensi: Effendie, M. I. (1997). Biologi Perikanan. Yayasan Pustaka Nusatama.</em></span>
       </div>
 
-      <div class="section-label">3. Kesehatan Darah Ikan & Udang</div>
+      <div class="section-label">4. Kesehatan Darah Ikan & Udang</div>
       <div class="legend" style="border:none; background:transparent;">
-        Tingginya <strong>TPC di organ hati</strong> (> 4 log CFU/g) mengindikasikan infeksi bakteri sistemik yang menembus <em>gut barrier</em>. Peningkatan drastis <strong>Gula Darah (Blood Glucose)</strong> mengindikasikan hiperglikemia akibat respons stres hormon kortisol.<br>
-        <strong>Hemolymph Udang:</strong> Penurunan <strong>THC</strong> (< 10x10⁶/mL), <strong>RB</strong>, dan <strong>PO</strong> menandakan imunosupresi, membuat udang rentan terhadap infeksi vibriosis.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (Hematologi Ikan): Blaxhall, P. C., & Daisley, K. W. (1973). Routine haematological methods for use with fish blood. Journal of Fish Biology, 5(6), 771-781. <a href="https://doi.org/10.1111/j.1095-8649.1973.tb04510.x" target="_blank" style="color:var(--primary)">doi:10.1111/j.1095-8649.1973.tb04510.x</a><br>
-        Ref (Gula Darah): Wedemeyer, G. A., Barton, B. A., & McLeay, D. J. (1990). Stress and acclimation. In Methods for Fish Biology (pp. 451-489). American Fisheries Society.<br>
-        Ref (Hemolymph Udang): Johansson, M. W., Keyser, P., Sritunyalucksana, K., & Söderhäll, K. (2000). The haemocytes of crustaceans. Aquaculture, 191(1-3), 45-52. <a href="https://doi.org/10.1016/S0044-8486(00)00342-9" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(00)00342-9</a></em></span>
+        Tingginya <strong>TPC di organ hati</strong> (> 4 log CFU/g) mengindikasikan infeksi bakteri sistemik. Peningkatan drastis <strong>Gula Darah</strong> mengindikasikan hiperglikemia akibat respons hormon stres (Kortisol). Penurunan <strong>THC</strong> (< 10x10⁶/mL) pada Udang menandakan imunosupresi.<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (Hematologi): Blaxhall, P. C., & Daisley, K. W. (1973). Routine haematological methods for use with fish blood. Journal of Fish Biology, 5(6), 771-781. <a href="https://doi.org/10.1111/j.1095-8649.1973.tb04510.x" target="_blank" style="color:var(--primary)">doi:10.1111/j.1095-8649.1973.tb04510.x</a><br>
+        Ref (Hemolymph): Johansson, M. W., Keyser, P., Sritunyalucksana, K., & Söderhäll, K. (2000). The haemocytes of crustaceans. Aquaculture, 191(1-3), 45-52. <a href="https://doi.org/10.1016/S0044-8486(00)00342-9" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(00)00342-9</a></em></span>
       </div>
 
-      <div class="section-label">4. Nutrisi & Manajemen Pakan</div>
+      <div class="section-label">5. Nutrisi & Manajemen Pakan</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>Biomassa Tambak</strong> = (ABW × Populasi) / 1000 (Kg)<br>
-        <strong>Kebutuhan Pakan Harian</strong> = Biomassa × (FR / 100) (Kg)<br>
         <strong>NFE (Nitrogen-Free Extract)</strong> = 100 - (Protein + Lemak + Serat + Abu + Air)<br>
+        <strong>Formulasi Pearson Square</strong> digunakan untuk mencari proporsi 2 bahan (Basal & Suplemen) terhadap target nutrisi.<br>
         <span style="font-size:11px; color:var(--text3);"><em>Referensi: Tacon, A. G. J. (1990). Standard methods for the nutrition and feeding of farmed fish and shrimp. FAO Field Document.</em></span>
       </div>
 
-      <div class="section-label">5. Kualitas Air & Plankton</div>
+      <div class="section-label">6. Kualitas Air & Plankton</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>NH₃ Bebas (Un-ionized Ammonia)</strong> = TAN × fraksi(pH, T°C). Batas letal: <strong>≤ 0.02 mg/L</strong>.<br>
-        <strong>Alkalinitas</strong> ideal berada di 80-150 mg/L sebagai <em>buffer</em> fluktuasi pH perairan.<br>
         <strong>Kepadatan Plankton</strong> = (Sel / Vol. Hitung) × Pengenceran (sel/mL).<br>
         <strong>Laju Pertumbuhan (K)</strong> = (ln N₂ − ln N₁) / (t₂ − t₁).<br>
         <span style="font-size:11px; color:var(--text3);"><em>Ref (Amonia): Emerson, K., Russo, R. C., Lund, R. E., & Thurston, R. V. (1975). Aqueous ammonia equilibrium calculations: effect of pH and temperature. Journal of the Fisheries Board of Canada, 32(12), 2379-2383. <a href="https://doi.org/10.1139/f75-274" target="_blank" style="color:var(--primary)">doi:10.1139/f75-274</a><br>
-        Ref (Alkalinitas): Wurts, W. A., & Durborow, R. M. (1992). Interactions of pH, carbon dioxide, alkalinity and hardness in fish ponds. SRAC Publication, 464.<br>
         Ref (Plankton): Andersen, R. A. (2005). Algal Culturing Techniques. Elsevier Academic Press.</em></span>
       </div>
 
-      <div class="section-label">6. Lab In Vitro (Mikrobiologi & Molekuler)</div>
+      <div class="section-label">7. Lab In Vitro (Mikrobiologi & Molekuler)</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>TPC Bakteri</strong> = (Σ koloni / vol plating) × 10<sup>faktor pengenceran</sup> CFU/mL.<br>
         <strong>Suhu Annealing PCR (Ta)</strong> = Tm terkecil dari primer − 5 °C.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (TPC): Sutton, S. (2011). Accuracy of plate counts. Journal of Validation Technology, 17(3), 42-46.<br>
-        Ref (Tm Primer): SantaLucia, J. (1998). A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. Proceedings of the National Academy of Sciences, 95(4), 1460-1465. <a href="https://doi.org/10.1073/pnas.95.4.1460" target="_blank" style="color:var(--primary)">doi:10.1073/pnas.95.4.1460</a></em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (Tm Primer): SantaLucia, J. (1998). A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. PNAS, 95(4), 1460-1465. <a href="https://doi.org/10.1073/pnas.95.4.1460" target="_blank" style="color:var(--primary)">doi:10.1073/pnas.95.4.1460</a></em></span>
       </div>
 
       <div class="section-label">Riwayat Pembaruan (Changelog)</div>
       <ul style="font-size:12px; color:var(--text2); line-height:1.6; margin-left:15px; font-family:var(--font-mono);">
-        <li><strong>v1.0</strong>: Rilis awal. Kalkulator In Vivo &amp; Kualitas Air Dasar.</li>
-        <li><strong>v2.0</strong>: Ekspansi Lab In Vitro (Mikrobiologi &amp; Molekuler).</li>
-        <li><strong>v3.0</strong>: EWS Dinamis Kualitas Air, Manajemen Pakan &amp; Analisis Proksimat.</li>
-        <li><strong>v3.5</strong>: Penambahan modul Analisis Plankton &amp; Mikroalga (Kepadatan &amp; Kinetika).</li>
-        <li><strong>v4.0</strong>: Profil Kesehatan Ikan &amp; Udang (Hematologi, Hemolymph, TPC Hati).</li>
-        <li><strong>v4.2</strong>: Analisis Gonad &amp; Pembenihan, Sinkronisasi AI EWS Kualitas Air Ekstrem.</li>
-        <li><strong>v4.3 (Current)</strong>: Visualisasi Grafik Dinamis (Chart.js), Validasi Volume Master Mix PCR, dan Penyempurnaan Sitasi Standar APA.</li>
+        <li><strong>v1.0 - v3.5</strong>: In Vivo, In Vitro (Mikrobiologi/PCR), EWS Air, Plankton.</li>
+        <li><strong>v4.0 - v4.3</strong>: Kesehatan Darah, Analisis Gonad, Visualisasi Chart.js, Bug fixes.</li>
+        <li><strong>v4.4 (Current)</strong>: Penambahan Kalkulator Manajemen Bioflok (Rasio C/N), Formulasi Pakan (Pearson Square), dan Dosimetri Sterilisasi Biosekuriti.</li>
       </ul>
 
     </div>
@@ -577,7 +718,7 @@ function openSub(btn, id, grp) {
 }
 function toggleTheme() { 
     document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); 
-    updateChartInvivo(); updateChartWQ(); // Refresh charts to apply theme colors
+    updateChartInvivo(); updateChartWQ(); 
 }
 function openDialog(id) { document.getElementById(id).classList.add('active'); }
 function closeDialog(id) { document.getElementById(id).classList.remove('active'); }
@@ -601,15 +742,11 @@ function toggleChartInvivo() {
     const container = document.getElementById('chartContainerInvivo');
     const btn = document.getElementById('btnToggleChartInvivo');
     if(container.style.display === 'none') {
-        container.style.display = 'block';
-        btn.innerHTML = '📉 Sembunyikan Grafik';
-        updateChartInvivo();
+        container.style.display = 'block'; btn.innerHTML = '📉 Sembunyikan Grafik'; updateChartInvivo();
     } else {
-        container.style.display = 'none';
-        btn.innerHTML = '📈 Tampilkan Grafik';
+        container.style.display = 'none'; btn.innerHTML = '📈 Tampilkan Grafik';
     }
 }
-
 function updateChartInvivo() {
     if(document.getElementById('chartContainerInvivo').style.display === 'none') return;
     const labels = []; const dataW0 = []; const dataWt = [];
@@ -634,15 +771,11 @@ function toggleChartWQ() {
     const container = document.getElementById('chartContainerWQ');
     const btn = document.getElementById('btnToggleChartWQ');
     if(container.style.display === 'none') {
-        container.style.display = 'block';
-        btn.innerHTML = '📉 Sembunyikan Grafik';
-        updateChartWQ();
+        container.style.display = 'block'; btn.innerHTML = '📉 Sembunyikan Grafik'; updateChartWQ();
     } else {
-        container.style.display = 'none';
-        btn.innerHTML = '📈 Tampilkan Grafik';
+        container.style.display = 'none'; btn.innerHTML = '📈 Tampilkan Grafik';
     }
 }
-
 function updateChartWQ() {
     if(document.getElementById('chartContainerWQ').style.display === 'none') return;
     const labels = []; const dataTemp = []; const dataPh = []; const dataDo = []; const dataTan = [];
@@ -686,7 +819,7 @@ function calcInvivo(i) {
 function exportSPSS(tId, fn) { exportCSV(tId, fn); setTimeout(() => openDialog('dlgSpss'), 300); }
 
 // ===================================================================
-// KESEHATAN IKAN & UDANG
+// KESEHATAN IKAN & UDANG + DOSIMETRI
 // ===================================================================
 function toggleHealthColumns() {
     const list = {'col-rbc':'chkRbc','col-wbc':'chkWbc','col-ht':'chkHt','col-hb':'chkHb','col-af':'chkAf','col-tpc-liver':'chkTpcLiver', 'col-glu':'chkGlu', 'col-thc':'chkThc', 'col-rb':'chkRb', 'col-po':'chkPo'};
@@ -725,8 +858,6 @@ function evalHealth() {
     let tpc = cTpc?parseFloat(r.querySelector('.h-tpc').value):null;
     let glu = cGlu?parseFloat(r.querySelector('.h-glu').value):null;
     let thc = cThc?parseFloat(r.querySelector('.h-thc').value):null;
-    let rb = cRb?parseFloat(r.querySelector('.h-rb').value):null;
-    let po = cPo?parseFloat(r.querySelector('.h-po').value):null;
     
     const scEl = r.querySelector('.h-status');
     let isCrit = false, isWarn = false;
@@ -740,8 +871,8 @@ function evalHealth() {
     if(cGlu && (glu>200)) isCrit=true; else if(cGlu && (glu>150)) isWarn=true;
     if(cThc && (thc<5)) isCrit=true; else if(cThc && (thc<10)) isWarn=true;
 
-    if(cRbc||cWbc||cHt||cHb||cAf||cTpc||cGlu||cThc||cRb||cPo) {
-      hasValid = true; latest = {rbc, wbc, ht, hb, af, tpc, glu, thc, rb, po};
+    if(cRbc||cWbc||cHt||cHb||cAf||cTpc||cGlu||cThc) {
+      hasValid = true; latest = {rbc, wbc, ht, hb, af, tpc, glu, thc};
       if(isCrit) scEl.innerHTML='<span class="badge badge-danger">⚠ Kritis</span>';
       else if(isWarn) scEl.innerHTML='<span class="badge badge-warning">Stres/Infeksi</span>';
       else scEl.innerHTML='<span class="badge badge-success">Optimal</span>';
@@ -763,9 +894,43 @@ function evalHealth() {
   else if (cHt && latest.ht>45) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Stres / Dehidrasi.</strong> Hematokrit tinggi menandakan hilangnya cairan plasma akibat stres osmotik.'; }
   else if (cWbc && latest.wbc>100) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Respons Inflamasi.</strong> Leukositosis awal. Cek kualitas air atau indikasi awal penyakit menular.'; }
   else if (cGlu && latest.glu>150) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Gula Darah Naik.</strong> Hewan budidaya sedang memasuki fase resistensi stres hormon kortisol.'; }
-  else if (cAf && latest.af>50) { bColor='var(--primary)'; icon='🛡️'; adv='<strong>Imunostimulasi Kuat.</strong> Aktivitas fagositosis makrofag sangat baik dalam melawan agen asing (efek positif imunostimulan).'; }
+  else if (cAf && latest.af>50) { bColor='var(--primary)'; icon='🛡️'; adv='<strong>Imunostimulasi Kuat.</strong> Aktivitas fagositosis makrofag sangat baik (efek positif imunostimulan).'; }
 
   pnl.style.borderLeftColor = bColor; pnl.innerHTML = `<strong style="color:var(--primary); font-size:15px;">Diagnosis Fisiologis & Patologi</strong><br>${icon} ${adv}`;
+}
+
+function autoFillPurity() {
+    const dType = document.getElementById('doseType').value;
+    if(dType !== 'custom') { document.getElementById('dosePurity').value = dType; calcDose(); }
+}
+function calcDose() {
+    const vol = parseFloat(document.getElementById('doseVol').value) || 0;
+    const volUnit = parseFloat(document.getElementById('doseUnit').value) || 1;
+    const target = parseFloat(document.getElementById('doseTarget').value) || 0;
+    const purity = parseFloat(document.getElementById('dosePurity').value) || 100;
+    
+    const volInLiters = vol * volUnit;
+    const resultEl = document.getElementById('doseResult');
+    const unitEl = document.getElementById('doseResultUnit');
+    
+    if(volInLiters > 0 && target > 0 && purity > 0) {
+        // Rumus: (Vol (L) * Target (ppm)) / (% kemurnian) / 1000 untuk konversi mg ke Gram
+        const requiredGrams = (volInLiters * target) / (purity / 100) / 1000;
+        
+        if (requiredGrams < 1) {
+            resultEl.textContent = (requiredGrams * 1000).toFixed(2);
+            unitEl.textContent = 'Miligram (mg)';
+        } else if (requiredGrams > 1000) {
+            resultEl.textContent = (requiredGrams / 1000).toFixed(2);
+            unitEl.textContent = 'Kilogram (Kg) / Liter';
+        } else {
+            resultEl.textContent = requiredGrams.toFixed(2);
+            unitEl.textContent = 'Gram (g) / mL';
+        }
+    } else {
+        resultEl.textContent = '0.00';
+        unitEl.textContent = 'Gram / mL';
+    }
 }
 
 // ===================================================================
@@ -786,7 +951,7 @@ function calcGonad(i) {
 }
 
 // ===================================================================
-// PAKAN ENGINE
+// PAKAN ENGINE (FR, Pearson, Proximate)
 // ===================================================================
 function addPakanRow() {
   const tb = document.getElementById('feedBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
@@ -808,33 +973,50 @@ function clP(i) {
   const res = r.querySelector('.res-nfe'); res.className='res-nfe val-num'; res.style.color='var(--primary)'; res.textContent=(100-(p+l+s+a+w)).toFixed(2);
 }
 
-// ===================================================================
-// PLANKTON & ALAMI
-// ===================================================================
-function addPlkDensRow() {
-  const tb = document.getElementById('plkDensBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
-  tr.innerHTML = `<td><input class="cell-input text-left" value="${isFirst?'Chlorella sp.':''}"></td><td><input type="number" class="cell-input pk-n" value="${isFirst?'150':''}" oninput="calcPlkDens(this)"></td><td><input type="number" class="cell-input pk-v" value="${isFirst?'0.0001':''}" title="Haemocytometer" oninput="calcPlkDens(this)"></td><td><input type="number" class="cell-input pk-dil" value="${isFirst?'10':''}" oninput="calcPlkDens(this)"></td><td class="res-plk sci-not">—</td><td></td>`;
-  tr.cells[5].appendChild(makeDel(function(){this.closest('tr').remove();})); if(isFirst) calcPlkDens(tr.querySelector('.pk-n'));
-}
-function calcPlkDens(i) {
-  const r = i.closest('tr'), n = parseFloat(r.querySelector('.pk-n').value), v = parseFloat(r.querySelector('.pk-v').value), dil = parseFloat(r.querySelector('.pk-dil').value), res = r.querySelector('.res-plk');
-  if(n>=0 && v>0 && dil>0) res.innerHTML = formatSci((n / v) * dil); else res.innerHTML = '—';
-}
-function calcPlkKin() {
-  const t1 = parseFloat(document.getElementById('plkT1').value), n1 = parseFloat(document.getElementById('plkN1').value), t2 = parseFloat(document.getElementById('plkT2').value), n2 = parseFloat(document.getElementById('plkN2').value);
-  const rK = document.getElementById('resPlkK'), rTd = document.getElementById('resPlkTd'), rRgr = document.getElementById('resPlkRgr'), al = document.getElementById('plkAlert');
-  al.style.display = 'none';
-  if(!isNaN(t1)&&!isNaN(n1)&&!isNaN(t2)&&!isNaN(n2)) {
-     if(t2>t1 && n2>n1 && n1>0) {
-         const k = (Math.log(n2)-Math.log(n1))/(t2-t1);
-         const rgr = ((n2 - n1)/n1) / (t2-t1);
-         rK.textContent = k.toFixed(4); rTd.textContent = (0.693/k).toFixed(2); rRgr.textContent = rgr.toFixed(4);
-     } else { al.style.display='block'; al.className='info-box danger'; al.textContent='Data tidak valid untuk fase log/eksponensial.'; rK.textContent='—'; rTd.textContent='—'; rRgr.textContent='—'; }
-  } else { rK.textContent='—'; rTd.textContent='—'; rRgr.textContent='—'; }
+function calcPearson() {
+    const target = parseFloat(document.getElementById('pearsonTarget').value) || 0;
+    const total = parseFloat(document.getElementById('pearsonTotal').value) || 0;
+    const b1Name = document.getElementById('pearsonB1Name').value || 'Bahan Basal';
+    const b1Pct = parseFloat(document.getElementById('pearsonB1Pct').value) || 0;
+    const b2Name = document.getElementById('pearsonB2Name').value || 'Bahan Suplemen';
+    const b2Pct = parseFloat(document.getElementById('pearsonB2Pct').value) || 0;
+    
+    document.getElementById('resPName1').textContent = b1Name;
+    document.getElementById('resPName2').textContent = b2Name;
+    const alertEl = document.getElementById('pearsonAlert');
+
+    if(target <= 0) return;
+    
+    if((target <= b1Pct && target <= b2Pct) || (target >= b1Pct && target >= b2Pct)) {
+        alertEl.style.display = 'block';
+        alertEl.textContent = '⚠️ Target Protein harus berada DI ANTARA nilai protein bahan basal dan suplemen.';
+        document.getElementById('resPPct1').textContent = '—';
+        document.getElementById('resPPct2').textContent = '—';
+        document.getElementById('resPGram1').textContent = '—';
+        document.getElementById('resPGram2').textContent = '—';
+        return;
+    }
+    alertEl.style.display = 'none';
+
+    // Pearson Square Calculation
+    const part1 = Math.abs(b2Pct - target);
+    const part2 = Math.abs(b1Pct - target);
+    const totalParts = part1 + part2;
+    
+    const prop1 = (part1 / totalParts) * 100;
+    const prop2 = (part2 / totalParts) * 100;
+    
+    document.getElementById('resPPct1').textContent = prop1.toFixed(2) + ' %';
+    document.getElementById('resPPct2').textContent = prop2.toFixed(2) + ' %';
+    
+    const totalGrams = total * 1000;
+    document.getElementById('resPGram1').textContent = (totalGrams * (prop1/100)).toFixed(1) + ' g';
+    document.getElementById('resPGram2').textContent = (totalGrams * (prop2/100)).toFixed(1) + ' g';
+    document.getElementById('resPTotalGram').textContent = totalGrams.toFixed(1) + ' g';
 }
 
 // ===================================================================
-// WATER QUALITY DYNAMIC EWS
+// WATER QUALITY DYNAMIC EWS & BIOFLOC C/N
 // ===================================================================
 function toggleWaterColumns() {
     const list = {'col-temp':'chkTemp','col-ph':'chkPh','col-do':'chkDo','col-tan':'chkTan', 'col-alk':'chkAlk', 'col-tds':'chkTds','col-kecerahan':'chkKecerahan','col-nitrit':'chkNitrit','col-nitrat':'chkNitrat','col-bod':'chkBod','col-tom':'chkTom'};
@@ -926,6 +1108,58 @@ function evalWater() {
   pnl.style.borderLeftColor = bColor; pnl.innerHTML = `<strong style="color:var(--primary); font-size:15px;">Dashboard Analitik &amp; Rekomendasi</strong><br>${icon} ${adv}`;
 }
 
+function autoFillCarbon() {
+    const type = document.getElementById('bfType').value;
+    if(type !== 'custom') { document.getElementById('bfPurity').value = type; calcBiofloc(); }
+}
+function calcBiofloc() {
+    const tan = parseFloat(document.getElementById('bfTan').value) || 0;
+    const vol = parseFloat(document.getElementById('bfVol').value) || 0;
+    const unit = parseFloat(document.getElementById('bfUnit').value) || 1;
+    const target = parseFloat(document.getElementById('bfTarget').value) || 0;
+    const purity = parseFloat(document.getElementById('bfPurity').value) || 40;
+    
+    // Asumsi TAN dalam mg/L. Volume dalam Liter = vol * unit.
+    // Total Nitrogen dalam wadah (Gram) = TAN (mg/L) * Volume (L) / 1000
+    const volInLiters = vol * unit;
+    const totalNGram = (tan * volInLiters) / 1000;
+    const targetC = totalNGram * target;
+    const resEl = document.getElementById('bfResult');
+    
+    if(totalNGram > 0 && target > 0 && purity > 0) {
+        // Jumlah bahan yg ditambahkan (g) = Kebutuhan Karbon / (%C/100)
+        const addition = targetC / (purity / 100);
+        resEl.textContent = addition.toFixed(2);
+    } else {
+        resEl.textContent = "0.00";
+    }
+}
+
+// ===================================================================
+// PLANKTON & ALAMI
+// ===================================================================
+function addPlkDensRow() {
+  const tb = document.getElementById('plkDensBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
+  tr.innerHTML = `<td><input class="cell-input text-left" value="${isFirst?'Chlorella sp.':''}"></td><td><input type="number" class="cell-input pk-n" value="${isFirst?'150':''}" oninput="calcPlkDens(this)"></td><td><input type="number" class="cell-input pk-v" value="${isFirst?'0.0001':''}" title="Haemocytometer" oninput="calcPlkDens(this)"></td><td><input type="number" class="cell-input pk-dil" value="${isFirst?'10':''}" oninput="calcPlkDens(this)"></td><td class="res-plk sci-not">—</td><td></td>`;
+  tr.cells[5].appendChild(makeDel(function(){this.closest('tr').remove();})); if(isFirst) calcPlkDens(tr.querySelector('.pk-n'));
+}
+function calcPlkDens(i) {
+  const r = i.closest('tr'), n = parseFloat(r.querySelector('.pk-n').value), v = parseFloat(r.querySelector('.pk-v').value), dil = parseFloat(r.querySelector('.pk-dil').value), res = r.querySelector('.res-plk');
+  if(n>=0 && v>0 && dil>0) res.innerHTML = formatSci((n / v) * dil); else res.innerHTML = '—';
+}
+function calcPlkKin() {
+  const t1 = parseFloat(document.getElementById('plkT1').value), n1 = parseFloat(document.getElementById('plkN1').value), t2 = parseFloat(document.getElementById('plkT2').value), n2 = parseFloat(document.getElementById('plkN2').value);
+  const rK = document.getElementById('resPlkK'), rTd = document.getElementById('resPlkTd'), rRgr = document.getElementById('resPlkRgr'), al = document.getElementById('plkAlert');
+  al.style.display = 'none';
+  if(!isNaN(t1)&&!isNaN(n1)&&!isNaN(t2)&&!isNaN(n2)) {
+     if(t2>t1 && n2>n1 && n1>0) {
+         const k = (Math.log(n2)-Math.log(n1))/(t2-t1);
+         const rgr = ((n2 - n1)/n1) / (t2-t1);
+         rK.textContent = k.toFixed(4); rTd.textContent = (0.693/k).toFixed(2); rRgr.textContent = rgr.toFixed(4);
+     } else { al.style.display='block'; al.className='info-box danger'; al.textContent='Data tidak valid untuk fase log/eksponensial.'; rK.textContent='—'; rTd.textContent='—'; rRgr.textContent='—'; }
+  } else { rK.textContent='—'; rTd.textContent='—'; rRgr.textContent='—'; }
+}
+
 // ===================================================================
 // MICROBIOLOGY LAB
 // ===================================================================
@@ -992,8 +1226,7 @@ function calcPCR() {
   const s=parseFloat(document.getElementById('pcrSamples').value)||0, t=parseFloat(document.getElementById('pcrTargetVol').value)||0;
   const templateVol = parseFloat(document.getElementById('pcrTemplateVol').value)||0;
   const ids=['vWater','vMix','vFwd','vRev']; 
-  let totalSingle=0;
-  let hasVal = false;
+  let totalSingle=0; let hasVal = false;
   
   ids.forEach((id,idx) => { 
       const valStr = document.getElementById(id).value;
@@ -1008,7 +1241,6 @@ function calcPCR() {
   document.getElementById('mixTotalN').textContent=(totalSingle*s).toFixed(1)+' µL'; 
   document.getElementById('mixTotalNov').textContent=(totalSingle*s*1.1).toFixed(1)+' µL';
 
-  // Validation Logic restored
   const al = document.getElementById('mixAlert');
   if (hasVal && t > 0) {
       const expectedMix = t - templateVol;
