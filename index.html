@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AquaLab Workspace by DSW</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 /* ===== DESIGN TOKENS ===== */
 :root {
@@ -137,6 +138,9 @@ tbody tr:hover td { background: var(--surface-hover); }
 .param-check { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; color: var(--text); font-weight: 500; }
 .param-check input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
 
+/* Chart Containers */
+.chart-container { background: var(--surface); padding: 15px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; box-shadow: var(--shadow); }
+
 .toast-container { position: fixed; bottom: 20px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
 .toast { background: var(--surface); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; font-family: var(--font-sans); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 10px; pointer-events: all; animation: slideIn 0.3s ease; }
 @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
@@ -196,6 +200,10 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="menu-item" onclick="switchView('v-kesehatan', this)">🩺 Kesehatan Ikan & Udang</div>
     </div>
     <div class="menu-group">
+      <div class="menu-title">Reproduksi & Pembenihan</div>
+      <div class="menu-item" onclick="switchView('v-gonad', this)">🔬 Analisis Gonad</div>
+    </div>
+    <div class="menu-group">
       <div class="menu-title">Nutrisi & Pakan</div>
       <div class="menu-item" onclick="switchView('v-pakan', this)">🌾 Manajemen Pakan</div>
     </div>
@@ -227,10 +235,16 @@ tbody tr:hover td { background: var(--surface-hover); }
         <div><div class="page-title">Performa In Vivo</div><div class="page-desc">Kalkulasi SR, ADG, SGR, dan FCR berbasis biomassa per wadah uji.</div></div>
         <div class="toolbar">
           <button class="btn btn-outline btn-sm" onclick="showHelp()">📐 Panduan</button>
+          <button class="btn btn-outline btn-sm" id="btnToggleChartInvivo" onclick="toggleChartInvivo()">📈 Tampilkan Grafik</button>
           <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('invivoTable', 'SPSS_InVivo.csv')">📊 Ekspor SPSS</button>
           <button class="btn btn-success btn-sm" onclick="exportCSV('invivoTable', 'Performa_InVivo.csv')">📥 Unduh CSV</button>
         </div>
       </div>
+      
+      <div id="chartContainerInvivo" class="chart-container" style="display:none;">
+          <canvas id="invivoChart" height="80"></canvas>
+      </div>
+
       <div class="legend"><strong>Legenda:</strong> <strong>W0</strong> = bobot awal (g) | <strong>Wt</strong> = bobot akhir (g) | <strong>N0</strong> = populasi awal | <strong>Nt</strong> = populasi akhir | <strong>Pakan</strong> = akumulasi pakan (g) | <strong>Hari</strong> = pemeliharaan.</div>
       <div class="table-wrap">
         <table id="invivoTable">
@@ -244,16 +258,9 @@ tbody tr:hover td { background: var(--surface-hover); }
     <div id="v-kesehatan" class="tab-pane">
       <div class="page-header">
         <div><div class="page-title">Profil Kesehatan Ikan & Udang</div><div class="page-desc">Analisis klinis darah (Hematologi/Hemolymph) dan deteksi infeksi organ target (TPC Hati).</div></div>
-        <div class="toolbar">
-          <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('healthTable', 'SPSS_KesehatanIkan.csv')">📊 Ekspor SPSS</button>
-          <button class="btn btn-success btn-sm" onclick="exportCSV('healthTable', 'Kesehatan_Ikan.csv')">📥 Unduh CSV</button>
-        </div>
+        <div class="toolbar"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('healthTable', 'SPSS_KesehatanIkan.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('healthTable', 'Kesehatan_Ikan.csv')">📥 Unduh CSV</button></div>
       </div>
-      
-      <div class="legend" style="margin-bottom:12px;">
-        <strong>Keterangan:</strong> <strong>Eritrosit</strong> = Sel darah merah (O₂ transport) | <strong>Leukosit</strong> = Sel darah putih (Imunitas) | <strong>Gula Darah</strong> = Respons stres primer | <strong>THC</strong> = Total Haemocyte Count (Udang) | <strong>RB</strong> = Respiratory Burst | <strong>PO</strong> = Prophenoloxidase | <strong>TPC Hati</strong> = Infeksi bakteri sistemik.
-      </div>
-
+      <div class="legend"><strong>Keterangan:</strong> <strong>Eritrosit</strong> = Sel darah merah | <strong>Leukosit</strong> = Sel darah putih | <strong>Gula Darah</strong> = Respons stres primer | <strong>THC</strong> = Total Haemocyte Count (Udang) | <strong>RB</strong> = Respiratory Burst | <strong>PO</strong> = Prophenoloxidase | <strong>TPC Hati</strong> = Infeksi bakteri sistemik.</div>
       <div class="param-settings">
           <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER DARAH (IKAN):</span>
           <label class="param-check"><input type="checkbox" id="chkRbc" checked onchange="toggleHealthColumns()"> Eritrosit</label>
@@ -269,45 +276,36 @@ tbody tr:hover td { background: var(--surface-hover); }
           <label class="param-check"><input type="checkbox" id="chkRb" onchange="toggleHealthColumns()"> Resp. Burst (RB)</label>
           <label class="param-check"><input type="checkbox" id="chkPo" onchange="toggleHealthColumns()"> PO Activity</label>
       </div>
-
-      <div id="ewsHealthPanel" class="ews-panel">
-        <strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar (Klinis Imunologi)</strong><br>
-        <span style="color:var(--text3); font-size:13px;">Lengkapi data klinis sampel untuk mengaktifkan diagnosis patologis otomatis.</span>
-      </div>
-
+      <div id="ewsHealthPanel" class="ews-panel"><strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar (Klinis Imunologi)</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data klinis sampel untuk mengaktifkan diagnosis patologis otomatis.</span></div>
       <div class="table-wrap">
         <table id="healthTable">
-          <thead>
-            <tr>
-              <th style="width:140px; text-align:left;">Sampel Uji</th>
-              <th class="col-rbc" data-tip="x 10^6 sel/mm3">Eritrosit (10⁶/mm³)</th>
-              <th class="col-wbc" data-tip="x 10^3 sel/mm3">Leukosit (10³/mm³)</th>
-              <th class="col-ht" data-tip="Persentase volume sel darah merah (%)">Hematokrit (%)</th>
-              <th class="col-hb" data-tip="Kadar Hemoglobin (g/dL)">Hb (g/dL)</th>
-              <th class="col-af" data-tip="Kemampuan makrofag memfagositosis">Act. Fagositosis (%)</th>
-              <th class="col-glu" data-tip="Indikator hiperglikemia akibat stres">Gula Darah (mg/dL)</th>
-              <th class="col-tpc-liver" data-tip="Beban bakteri di hati (log CFU/g)">TPC Hati (log)</th>
-              <th class="col-thc" style="display:none;" data-tip="Total sel imun udang">THC (10⁶/mL)</th>
-              <th class="col-rb" style="display:none;" data-tip="Aktivitas oksigen reaktif">RB (OD)</th>
-              <th class="col-po" style="display:none;" data-tip="Aktivitas Prophenoloxidase">PO (OD/min)</th>
-              <th>Status Klinis</th>
-              <th style="width:36px;"></th>
-            </tr>
-          </thead>
+          <thead><tr><th style="width:140px; text-align:left;">Sampel Uji</th><th class="col-rbc">Eritrosit (10⁶)</th><th class="col-wbc">Leukosit (10³)</th><th class="col-ht">Ht (%)</th><th class="col-hb">Hb (g/dL)</th><th class="col-af">AF (%)</th><th class="col-glu">Glukosa (mg/dL)</th><th class="col-tpc-liver">TPC Hati (log)</th><th class="col-thc" style="display:none;">THC (10⁶/mL)</th><th class="col-rb" style="display:none;">RB (OD)</th><th class="col-po" style="display:none;">PO (OD/min)</th><th>Status Klinis</th><th style="width:36px;"></th></tr></thead>
           <tbody id="healthBody"></tbody>
         </table>
       </div>
       <button class="btn btn-outline btn-sm" onclick="addHealthRow()">+ Tambah Data Individu</button>
     </div>
 
+    <div id="v-gonad" class="tab-pane">
+      <div class="page-header">
+        <div><div class="page-title">Analisis Gonad & Pembenihan</div><div class="page-desc">Kalkulator Tingkat Kematangan Gonad (GSI, HSI) dan Estimasi Fekunditas.</div></div>
+        <div class="toolbar"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('gonadTable', 'SPSS_Gonad.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('gonadTable', 'Data_Gonad.csv')">📥 Unduh CSV</button></div>
+      </div>
+      <div class="legend"><strong>Keterangan Somatik:</strong> <strong>Wt</strong> = Bobot total ikan (g) | <strong>Wg</strong> = Bobot total gonad (g) | <strong>Wh</strong> = Bobot total hati (g).<br><strong>Keterangan Fekunditas:</strong> <strong>w</strong> = Bobot sub-sampel gonad (g) | <strong>n</strong> = Jumlah telur pada sub-sampel.</div>
+      <div class="table-wrap">
+        <table id="gonadTable">
+          <thead><tr><th style="width:140px; text-align:left;">ID Induk Ikan</th><th>Wt (g)</th><th>Wg (g)</th><th>Wh (g)</th><th>w (g)</th><th>n (butir)</th><th>GSI (%)</th><th>HSI (%)</th><th>Fekunditas</th><th style="width:36px;"></th></tr></thead>
+          <tbody id="gonadBody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="addGonadRow()">+ Tambah Data Induk</button>
+    </div>
+
     <div id="v-pakan" class="tab-pane">
       <div class="page-header">
         <div><div class="page-title">Manajemen Nutrisi & Pakan</div><div class="page-desc">Kalkulator program pemberian pakan (Feeding Rate) dan Analisis Proksimat.</div></div>
       </div>
-      <div class="sub-nav">
-        <button class="sub-btn active" onclick="openSub(this, 'pakan-harian', 'pakan-group')">🌾 Program Feeding Rate</button>
-        <button class="sub-btn" onclick="openSub(this, 'pakan-nutrisi', 'pakan-group')">🧪 Analisis Proksimat Pakan</button>
-      </div>
+      <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'pakan-harian', 'pakan-group')">🌾 Program Feeding Rate</button><button class="sub-btn" onclick="openSub(this, 'pakan-nutrisi', 'pakan-group')">🧪 Analisis Proksimat Pakan</button></div>
       
       <div id="pakan-harian" class="sub-pane pakan-group active">
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('feedTable', 'SPSS_Feeding.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('feedTable', 'Program_Feeding.csv')">📥 Ekspor CSV</button></div>
@@ -326,16 +324,24 @@ tbody tr:hover td { background: var(--surface-hover); }
     <div id="v-water" class="tab-pane">
       <div class="page-header">
         <div><div class="page-title">EWS Kualitas Air Dinamis</div><div class="page-desc">Evaluasi status lingkungan dan risiko toksisitas secara terintegrasi.</div></div>
-        <div class="toolbar"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('waterTable', 'SPSS_KualitasAir.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('waterTable', 'Kualitas_Air.csv')">📥 Unduh CSV</button></div>
+        <div class="toolbar">
+          <button class="btn btn-outline btn-sm" id="btnToggleChartWQ" onclick="toggleChartWQ()">📈 Tampilkan Grafik</button>
+          <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('waterTable', 'SPSS_KualitasAir.csv')">📊 Ekspor SPSS</button>
+          <button class="btn btn-success btn-sm" onclick="exportCSV('waterTable', 'Kualitas_Air.csv')">📥 Unduh CSV</button>
+        </div>
       </div>
       
+      <div id="chartContainerWQ" class="chart-container" style="display:none;">
+          <canvas id="wqChart" height="100"></canvas>
+      </div>
+
       <div class="param-settings">
           <span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER AKTIF:</span>
           <label class="param-check"><input type="checkbox" id="chkTemp" checked onchange="toggleWaterColumns()"> Suhu</label>
           <label class="param-check"><input type="checkbox" id="chkPh" checked onchange="toggleWaterColumns()"> pH</label>
           <label class="param-check"><input type="checkbox" id="chkDo" checked onchange="toggleWaterColumns()"> DO</label>
           <label class="param-check"><input type="checkbox" id="chkTan" checked onchange="toggleWaterColumns()"> Amonia (TAN)</label>
-          <label class="param-check"><input type="checkbox" id="chkAlk" onchange="toggleWaterColumns()"> Alkalinitas</label>
+          <label class="param-check"><input type="checkbox" id="chkAlk" checked onchange="toggleWaterColumns()"> Alkalinitas</label>
           <label class="param-check"><input type="checkbox" id="chkTds" onchange="toggleWaterColumns()"> TDS</label>
           <label class="param-check"><input type="checkbox" id="chkKecerahan" onchange="toggleWaterColumns()"> Kecerahan</label>
           <label class="param-check"><input type="checkbox" id="chkNitrit" onchange="toggleWaterColumns()"> Nitrit</label>
@@ -350,10 +356,11 @@ tbody tr:hover td { background: var(--surface-hover); }
         <table id="waterTable">
           <thead>
             <tr>
-              <th style="width:60px;">Hari</th>
+              <th style="width:50px;">Hari</th>
+              <th style="min-width:120px;">Keterangan / Waktu</th>
               <th class="col-temp">Suhu (°C)</th><th class="col-ph">pH</th><th class="col-do">DO (mg/L)</th>
               <th class="col-tan">TAN (ppm)</th><th class="col-tan">NH₃ Bebas</th>
-              <th class="col-alk" style="display:none;">Alkalinitas (mg/L)</th>
+              <th class="col-alk">Alkalinitas (mg/L)</th>
               <th class="col-tds" style="display:none;">TDS (mg/L)</th><th class="col-kecerahan" style="display:none;">Kecerahan (cm)</th>
               <th class="col-nitrit" style="display:none;">Nitrit (ppm)</th><th class="col-nitrat" style="display:none;">Nitrat (ppm)</th>
               <th class="col-bod" style="display:none;">BOD (mg/L)</th><th class="col-tom" style="display:none;">TOM (mg/L)</th>
@@ -472,7 +479,7 @@ tbody tr:hover td { background: var(--surface-hover); }
 </div>
 
 <div class="overlay" id="dlgHelp">
-  <div class="dialog" style="width:680px; max-height:85vh; display:flex; flex-direction:column;">
+  <div class="dialog" style="width:720px; max-height:85vh; display:flex; flex-direction:column;">
     <div class="dialog-header">📐 Panduan Formula & Referensi Ilmiah <button class="btn-icon" onclick="closeDialog('dlgHelp')" style="font-size:18px;">×</button></div>
     <div class="dialog-body" style="overflow-y:auto; flex:1;">
       
@@ -482,39 +489,63 @@ tbody tr:hover td { background: var(--surface-hover); }
         <strong>ADG (Average Daily Growth)</strong> = (Wt − W0) / t (g/hari)<br>
         <strong>SGR (Specific Growth Rate)</strong> = [(ln Wt − ln W0) / t] × 100 (%/hari)<br>
         <strong>FCR (Feed Conversion Ratio)</strong> = F / (Biomassa Akhir − Biomassa Awal)<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Lugert, V. et al. (2016). Reviews in Aquaculture. <a href="https://doi.org/10.1111/raq.12099" target="_blank" style="color:var(--primary)">doi:10.1111/raq.12099</a></em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Lugert, V., Thaller, G., Tetens, J., Schulz, C., & Krieter, J. (2016). A review on fish growth calculation: multiple functions in common use, need for a standardized procedure. Reviews in Aquaculture, 8(1), 50-62. <a href="https://doi.org/10.1111/raq.12099" target="_blank" style="color:var(--primary)">doi:10.1111/raq.12099</a></em></span>
       </div>
 
-      <div class="section-label">2. Kesehatan Darah Ikan & Udang</div>
+      <div class="section-label">2. Reproduksi & Pembenihan (Gonad)</div>
+      <div class="legend" style="border:none; background:transparent;">
+        <strong>GSI (Gonadosomatic Index)</strong> = (Wg / Wt) × 100 (%)<br>
+        <strong>HSI (Hepatosomatic Index)</strong> = (Wh / Wt) × 100 (%)<br>
+        <strong>Fekunditas Gravimetri</strong> = (Wg / w) × n (butir telur)<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Effendie, M. I. (1997). Biologi Perikanan. Yayasan Pustaka Nusatama.</em></span>
+      </div>
+
+      <div class="section-label">3. Kesehatan Darah Ikan & Udang</div>
       <div class="legend" style="border:none; background:transparent;">
         Tingginya <strong>TPC di organ hati</strong> (> 4 log CFU/g) mengindikasikan infeksi bakteri sistemik yang menembus <em>gut barrier</em>. Peningkatan drastis <strong>Gula Darah (Blood Glucose)</strong> mengindikasikan hiperglikemia akibat respons stres hormon kortisol.<br>
         <strong>Hemolymph Udang:</strong> Penurunan <strong>THC</strong> (< 10x10⁶/mL), <strong>RB</strong>, dan <strong>PO</strong> menandakan imunosupresi, membuat udang rentan terhadap infeksi vibriosis.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (Ikan): Blaxhall & Daisley (1973). J. Fish Biol. <a href="https://doi.org/10.1111/j.1095-8649.1973.tb04510.x" target="_blank" style="color:var(--primary)">doi:10.1111/j.1095-8649.1973.tb04510.x</a> | Wedemeyer et al. (1990). Blood Glucose. <a href="https://doi.org/10.1577/1568-9883" target="_blank" style="color:var(--primary)">doi:10.1577/1568-9883</a><br>Ref (Udang): Johansson et al. (2000). The haemocytes of crustaceans. Aquaculture. <a href="https://doi.org/10.1016/S0044-8486(00)00342-9" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(00)00342-9</a></em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (Hematologi Ikan): Blaxhall, P. C., & Daisley, K. W. (1973). Routine haematological methods for use with fish blood. Journal of Fish Biology, 5(6), 771-781. <a href="https://doi.org/10.1111/j.1095-8649.1973.tb04510.x" target="_blank" style="color:var(--primary)">doi:10.1111/j.1095-8649.1973.tb04510.x</a><br>
+        Ref (Gula Darah): Wedemeyer, G. A., Barton, B. A., & McLeay, D. J. (1990). Stress and acclimation. In Methods for Fish Biology (pp. 451-489). American Fisheries Society.<br>
+        Ref (Hemolymph Udang): Johansson, M. W., Keyser, P., Sritunyalucksana, K., & Söderhäll, K. (2000). The haemocytes of crustaceans. Aquaculture, 191(1-3), 45-52. <a href="https://doi.org/10.1016/S0044-8486(00)00342-9" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(00)00342-9</a></em></span>
       </div>
 
-      <div class="section-label">3. Nutrisi & Manajemen Pakan</div>
+      <div class="section-label">4. Nutrisi & Manajemen Pakan</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>Biomassa Tambak</strong> = (ABW × Populasi) / 1000 (Kg)<br>
         <strong>Kebutuhan Pakan Harian</strong> = Biomassa × (FR / 100) (Kg)<br>
         <strong>NFE (Nitrogen-Free Extract)</strong> = 100 - (Protein + Lemak + Serat + Abu + Air)<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Tacon, A.G.J. (1990). Standard methods for nutrition of farmed fish. FAO.</em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Tacon, A. G. J. (1990). Standard methods for the nutrition and feeding of farmed fish and shrimp. FAO Field Document.</em></span>
       </div>
 
-      <div class="section-label">4. Kualitas Air & Plankton</div>
+      <div class="section-label">5. Kualitas Air & Plankton</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>NH₃ Bebas (Un-ionized Ammonia)</strong> = TAN × fraksi(pH, T°C). Batas letal: <strong>≤ 0.02 mg/L</strong>.<br>
         <strong>Alkalinitas</strong> ideal berada di 80-150 mg/L sebagai <em>buffer</em> fluktuasi pH perairan.<br>
         <strong>Kepadatan Plankton</strong> = (Sel / Vol. Hitung) × Pengenceran (sel/mL).<br>
         <strong>Laju Pertumbuhan (K)</strong> = (ln N₂ − ln N₁) / (t₂ − t₁).<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (Air): Emerson et al. (1975). J. Fish. Res. Bd. Can. <a href="https://doi.org/10.1139/f75-274" target="_blank" style="color:var(--primary)">doi:10.1139/f75-274</a> | Wurts & Durborow (1992). Alkalinity. SRAC Publication 464.<br>Ref (Plankton): Andersen, R.A. (2005). Algal Culturing Techniques.</em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (Amonia): Emerson, K., Russo, R. C., Lund, R. E., & Thurston, R. V. (1975). Aqueous ammonia equilibrium calculations: effect of pH and temperature. Journal of the Fisheries Board of Canada, 32(12), 2379-2383. <a href="https://doi.org/10.1139/f75-274" target="_blank" style="color:var(--primary)">doi:10.1139/f75-274</a><br>
+        Ref (Alkalinitas): Wurts, W. A., & Durborow, R. M. (1992). Interactions of pH, carbon dioxide, alkalinity and hardness in fish ponds. SRAC Publication, 464.<br>
+        Ref (Plankton): Andersen, R. A. (2005). Algal Culturing Techniques. Elsevier Academic Press.</em></span>
       </div>
 
-      <div class="section-label">5. Lab In Vitro (Mikrobiologi & Molekuler)</div>
+      <div class="section-label">6. Lab In Vitro (Mikrobiologi & Molekuler)</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>TPC Bakteri</strong> = (Σ koloni / vol plating) × 10<sup>faktor pengenceran</sup> CFU/mL.<br>
         <strong>Suhu Annealing PCR (Ta)</strong> = Tm terkecil dari primer − 5 °C.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (TPC): Sutton, S. (2011). Journal of Validation Technology.<br>Ref (Tm Primer): SantaLucia, J. (1998). PNAS. <a href="https://doi.org/10.1073/pnas.95.4.1460" target="_blank" style="color:var(--primary)">doi:10.1073/pnas.95.4.1460</a></em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (TPC): Sutton, S. (2011). Accuracy of plate counts. Journal of Validation Technology, 17(3), 42-46.<br>
+        Ref (Tm Primer): SantaLucia, J. (1998). A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. Proceedings of the National Academy of Sciences, 95(4), 1460-1465. <a href="https://doi.org/10.1073/pnas.95.4.1460" target="_blank" style="color:var(--primary)">doi:10.1073/pnas.95.4.1460</a></em></span>
       </div>
+
+      <div class="section-label">Riwayat Pembaruan (Changelog)</div>
+      <ul style="font-size:12px; color:var(--text2); line-height:1.6; margin-left:15px; font-family:var(--font-mono);">
+        <li><strong>v1.0</strong>: Rilis awal. Kalkulator In Vivo &amp; Kualitas Air Dasar.</li>
+        <li><strong>v2.0</strong>: Ekspansi Lab In Vitro (Mikrobiologi &amp; Molekuler).</li>
+        <li><strong>v3.0</strong>: EWS Dinamis Kualitas Air, Manajemen Pakan &amp; Analisis Proksimat.</li>
+        <li><strong>v3.5</strong>: Penambahan modul Analisis Plankton &amp; Mikroalga (Kepadatan &amp; Kinetika).</li>
+        <li><strong>v4.0</strong>: Profil Kesehatan Ikan &amp; Udang (Hematologi, Hemolymph, TPC Hati).</li>
+        <li><strong>v4.2</strong>: Analisis Gonad &amp; Pembenihan, Sinkronisasi AI EWS Kualitas Air Ekstrem.</li>
+        <li><strong>v4.3 (Current)</strong>: Visualisasi Grafik Dinamis (Chart.js), Validasi Volume Master Mix PCR, dan Penyempurnaan Sitasi Standar APA.</li>
+      </ul>
 
     </div>
     <div class="dialog-footer"><button class="btn btn-primary btn-sm" onclick="closeDialog('dlgHelp')">Tutup</button></div>
@@ -544,7 +575,10 @@ function openSub(btn, id, grp) {
   pane.querySelectorAll('.'+grp).forEach(p => p.classList.remove('active'));
   btn.classList.add('active'); document.getElementById(id).classList.add('active');
 }
-function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+function toggleTheme() { 
+    document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); 
+    updateChartInvivo(); updateChartWQ(); // Refresh charts to apply theme colors
+}
 function openDialog(id) { document.getElementById(id).classList.add('active'); }
 function closeDialog(id) { document.getElementById(id).classList.remove('active'); }
 function showHelp() { openDialog('dlgHelp'); }
@@ -558,12 +592,88 @@ function toast(msg) {
 function makeDel(fn) { const b = document.createElement('button'); b.className = 'btn-icon'; b.innerHTML = '×'; b.onclick = fn; return b; }
 
 // ===================================================================
+// CHARTS & VISUALIZATIONS (CHART.JS)
+// ===================================================================
+let invivoChartInstance = null;
+let wqChartInstance = null;
+
+function toggleChartInvivo() {
+    const container = document.getElementById('chartContainerInvivo');
+    const btn = document.getElementById('btnToggleChartInvivo');
+    if(container.style.display === 'none') {
+        container.style.display = 'block';
+        btn.innerHTML = '📉 Sembunyikan Grafik';
+        updateChartInvivo();
+    } else {
+        container.style.display = 'none';
+        btn.innerHTML = '📈 Tampilkan Grafik';
+    }
+}
+
+function updateChartInvivo() {
+    if(document.getElementById('chartContainerInvivo').style.display === 'none') return;
+    const labels = []; const dataW0 = []; const dataWt = [];
+    document.querySelectorAll('#invivoBody tr').forEach(r => {
+        labels.push(r.querySelector('.v-trt').value || 'Wadah');
+        dataW0.push(parseFloat(r.querySelector('.v-w0').value) || 0);
+        dataWt.push(parseFloat(r.querySelector('.v-wt').value) || 0);
+    });
+    const ctx = document.getElementById('invivoChart').getContext('2d');
+    if(invivoChartInstance) invivoChartInstance.destroy();
+    invivoChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: labels, datasets: [
+            { label: 'Bobot Awal (W0)', data: dataW0, backgroundColor: '#94A3B8' },
+            { label: 'Bobot Akhir (Wt)', data: dataWt, backgroundColor: '#38BDF8' }
+        ]},
+        options: { responsive: true, plugins: { legend: { labels: { color: '#94A3B8' } } }, scales: { x: { ticks: { color: '#94A3B8' } }, y: { ticks: { color: '#94A3B8' } } } }
+    });
+}
+
+function toggleChartWQ() {
+    const container = document.getElementById('chartContainerWQ');
+    const btn = document.getElementById('btnToggleChartWQ');
+    if(container.style.display === 'none') {
+        container.style.display = 'block';
+        btn.innerHTML = '📉 Sembunyikan Grafik';
+        updateChartWQ();
+    } else {
+        container.style.display = 'none';
+        btn.innerHTML = '📈 Tampilkan Grafik';
+    }
+}
+
+function updateChartWQ() {
+    if(document.getElementById('chartContainerWQ').style.display === 'none') return;
+    const labels = []; const dataTemp = []; const dataPh = []; const dataDo = []; const dataTan = [];
+    document.querySelectorAll('#waterBody tr').forEach(r => {
+        labels.push('H-' + (r.querySelector('.w-day').value || '?'));
+        dataTemp.push(parseFloat(r.querySelector('.w-temp').value) || null);
+        dataPh.push(parseFloat(r.querySelector('.w-ph').value) || null);
+        dataDo.push(parseFloat(r.querySelector('.w-do').value) || null);
+        dataTan.push(parseFloat(r.querySelector('.w-tan').value) || null);
+    });
+    const ctx = document.getElementById('wqChart').getContext('2d');
+    if(wqChartInstance) wqChartInstance.destroy();
+    wqChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels: labels, datasets: [
+            { label: 'Suhu (°C)', data: dataTemp, borderColor: '#f87171', tension: 0.3 },
+            { label: 'pH', data: dataPh, borderColor: '#34d399', tension: 0.3 },
+            { label: 'DO (mg/L)', data: dataDo, borderColor: '#60a5fa', tension: 0.3 },
+            { label: 'TAN (ppm)', data: dataTan, borderColor: '#fbbf24', tension: 0.3 }
+        ]},
+        options: { responsive: true, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#94A3B8' } } }, scales: { x: { ticks: { color: '#94A3B8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94A3B8' }, grid: { color: '#334155' } } } }
+    });
+}
+
+// ===================================================================
 // IN VIVO PERFORMANCE
 // ===================================================================
 function addInvivoRow() {
   const tb = document.getElementById('invivoBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
-  tr.innerHTML = `<td><input class="cell-input text-left v-trt" value="${isFirst?'P1 (Kontrol)':''}"></td><td><input class="cell-input v-wad" value="${isFirst?'U-1':''}"></td><td><input type="number" class="cell-input v-w0" value="${isFirst?'15.5':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-wt" value="${isFirst?'45.2':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-n0" value="${isFirst?'100':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-nt" value="${isFirst?'95':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-f" value="${isFirst?'3500':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-t" value="${isFirst?'30':''}" oninput="calcInvivo(this)"></td><td class="res-sr val-dim">—</td><td class="res-adg val-dim">—</td><td class="res-sgr val-dim">—</td><td class="res-fcr val-dim">—</td><td></td>`;
-  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris?')) tr.remove(); })); if(isFirst) calcInvivo(tr.querySelector('.v-w0'));
+  tr.innerHTML = `<td><input class="cell-input text-left v-trt" value="${isFirst?'P1 (Kontrol)':''}" oninput="updateChartInvivo()"></td><td><input class="cell-input v-wad" value="${isFirst?'U-1':''}"></td><td><input type="number" class="cell-input v-w0" value="${isFirst?'15.5':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-wt" value="${isFirst?'45.2':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-n0" value="${isFirst?'100':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-nt" value="${isFirst?'95':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-f" value="${isFirst?'3500':''}" oninput="calcInvivo(this)"></td><td><input type="number" class="cell-input v-t" value="${isFirst?'30':''}" oninput="calcInvivo(this)"></td><td class="res-sr val-dim">—</td><td class="res-adg val-dim">—</td><td class="res-sgr val-dim">—</td><td class="res-fcr val-dim">—</td><td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(() => { if(confirm('Hapus baris?')) { tr.remove(); updateChartInvivo(); } })); if(isFirst) calcInvivo(tr.querySelector('.v-w0'));
 }
 function calcInvivo(i) {
   const r = i.closest('tr'), w0 = parseFloat(r.querySelector('.v-w0').value)||0, wt = parseFloat(r.querySelector('.v-wt').value)||0, n0 = parseFloat(r.querySelector('.v-n0').value)||0, nt = parseFloat(r.querySelector('.v-nt').value)||0, f  = parseFloat(r.querySelector('.v-f').value)||0, t  = parseFloat(r.querySelector('.v-t').value)||0;
@@ -571,11 +681,12 @@ function calcInvivo(i) {
   if(n0>0 && r.querySelector('.v-nt').value!=='') { const sr=(nt/n0)*100; srEl.className='res-sr val-num'; srEl.textContent=sr.toFixed(1)+'%'; if(sr>=80) srEl.style.color='var(--success)'; else if(sr>=60) srEl.style.color='var(--warning)'; else srEl.style.color='var(--danger)'; } else srEl.textContent='—';
   if(t>0 && wt>0 && w0>0) { adgEl.className='res-adg val-num'; adgEl.textContent=((wt-w0)/t).toFixed(3); if(wt>w0) { sgrEl.className='res-sgr val-num'; sgrEl.textContent=(((Math.log(wt)-Math.log(w0))/t)*100).toFixed(3); } } else { adgEl.textContent='—'; sgrEl.textContent='—'; }
   const dB = (wt*nt)-(w0*n0); if(dB>0 && f>0) { fcrEl.className='res-fcr val-num'; fcrEl.textContent=(f/dB).toFixed(2); } else fcrEl.textContent='—';
+  updateChartInvivo();
 }
 function exportSPSS(tId, fn) { exportCSV(tId, fn); setTimeout(() => openDialog('dlgSpss'), 300); }
 
 // ===================================================================
-// KESEHATAN IKAN & UDANG (NEW FEATURES)
+// KESEHATAN IKAN & UDANG
 // ===================================================================
 function toggleHealthColumns() {
     const list = {'col-rbc':'chkRbc','col-wbc':'chkWbc','col-ht':'chkHt','col-hb':'chkHb','col-af':'chkAf','col-tpc-liver':'chkTpcLiver', 'col-glu':'chkGlu', 'col-thc':'chkThc', 'col-rb':'chkRb', 'col-po':'chkPo'};
@@ -620,7 +731,6 @@ function evalHealth() {
     const scEl = r.querySelector('.h-status');
     let isCrit = false, isWarn = false;
 
-    // Evaluasi EWS Kesehatan Ikan & Udang
     if(cRbc && (rbc<1.0)) isCrit=true; else if(cRbc && (rbc<1.5)) isWarn=true;
     if(cWbc && (wbc>150)) isCrit=true; else if(cWbc && (wbc>100)) isWarn=true;
     if(cHt && (ht<20)) isCrit=true; else if(cHt && (ht<25 || ht>45)) isWarn=true;
@@ -640,15 +750,12 @@ function evalHealth() {
 
   const pnl = document.getElementById('ewsHealthPanel');
   if(!hasValid || !latest) {
-    pnl.style.borderLeftColor='var(--text3)';
-    pnl.innerHTML='<strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar (Klinis Imunologi)</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data hematologi / hemolymph untuk mengaktifkan diagnosis patologis otomatis.</span>';
-    return;
+    pnl.style.borderLeftColor='var(--text3)'; pnl.innerHTML='<strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar (Klinis Imunologi)</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data hematologi / hemolymph untuk mengaktifkan diagnosis patologis otomatis.</span>'; return;
   }
 
-  let adv='Profil klinis/hematologi normal, ikan atau udang dalam kondisi prima.', bColor='var(--success)', icon='✅';
-  
-  if (cGlu && latest.glu>200) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Hiperglikemia Ekstrem.</strong> Gula darah sangat tinggi, indikasi stres fisiologis akut (kualitas air buruk atau penanganan kasar).'; }
-  else if (cThc && cTpc && latest.thc<5 && latest.tpc>3) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Imunosupresi & Infeksi (Udang).</strong> Hemosit drop drastis disertai peningkatan bakteri di hepatopankreas (Risiko tinggi Vibriosis).'; }
+  let adv='Profil klinis/hematologi normal, hewan dalam kondisi prima.', bColor='var(--success)', icon='✅';
+  if (cGlu && latest.glu>200) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Hiperglikemia Ekstrem.</strong> Gula darah sangat tinggi, indikasi stres fisiologis akut.'; }
+  else if (cThc && cTpc && latest.thc<5 && latest.tpc>3) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Imunosupresi & Infeksi (Udang).</strong> Hemosit drop drastis disertai peningkatan bakteri (Risiko tinggi Vibriosis).'; }
   else if (cWbc && cTpc && latest.wbc>150 && latest.tpc>4.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Infeksi Bakteri Sistemik Sangat Parah.</strong> Sel darah putih melonjak merespons beban patogen ekstrim di organ hati.'; }
   else if (cTpc && latest.tpc>4.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Bakteremia / Infeksi Hati.</strong> Bakteri telah menembus <em>gut barrier</em> ke sirkulasi darah dan organ dalam.'; }
   else if (cRbc && cHt && cHb && (latest.rbc<1.0 || latest.ht<20 || latest.hb<4.0)) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Anemia Kritis.</strong> Indikasi kekurangan nutrisi akut atau serangan ektoparasit penghisap darah.'; }
@@ -656,9 +763,26 @@ function evalHealth() {
   else if (cHt && latest.ht>45) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Stres / Dehidrasi.</strong> Hematokrit tinggi menandakan hilangnya cairan plasma akibat stres osmotik.'; }
   else if (cWbc && latest.wbc>100) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Respons Inflamasi.</strong> Leukositosis awal. Cek kualitas air atau indikasi awal penyakit menular.'; }
   else if (cGlu && latest.glu>150) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Gula Darah Naik.</strong> Hewan budidaya sedang memasuki fase resistensi stres hormon kortisol.'; }
-  else if (cAf && latest.af>50) { bColor='var(--primary)'; icon='🛡️'; adv='<strong>Imunostimulasi Kuat.</strong> Aktivitas fagositosis makrofag sangat baik dalam melawan agen asing (efek positif probiotik/prebiotik).'; }
+  else if (cAf && latest.af>50) { bColor='var(--primary)'; icon='🛡️'; adv='<strong>Imunostimulasi Kuat.</strong> Aktivitas fagositosis makrofag sangat baik dalam melawan agen asing (efek positif imunostimulan).'; }
 
   pnl.style.borderLeftColor = bColor; pnl.innerHTML = `<strong style="color:var(--primary); font-size:15px;">Diagnosis Fisiologis & Patologi</strong><br>${icon} ${adv}`;
+}
+
+// ===================================================================
+// GONAD & PEMBENIHAN
+// ===================================================================
+function addGonadRow() {
+  const tb = document.getElementById('gonadBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
+  tr.innerHTML = `<td><input class="cell-input text-left" value="${isFirst ? 'Induk-01' : ''}"></td><td><input type="number" class="cell-input g-wt" value="${isFirst ? '1500' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-wg" value="${isFirst ? '300' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-wh" value="${isFirst ? '45' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-wsub" value="${isFirst ? '1' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-nsub" value="${isFirst ? '1200' : ''}" oninput="calcGonad(this)"></td><td class="res-gsi val-dim" style="color:var(--primary); font-weight:bold;">—</td><td class="res-hsi val-dim" style="color:var(--warning); font-weight:bold;">—</td><td class="res-fek val-dim" style="color:var(--success); font-weight:bold;">—</td><td></td>`;
+  tr.cells[tr.cells.length-1].appendChild(makeDel(function(){ this.closest('tr').remove(); })); if(isFirst) calcGonad(tr.querySelector('.g-wt'));
+}
+function calcGonad(i) {
+  const r = i.closest('tr'), wt = parseFloat(r.querySelector('.g-wt').value)||0, wg = parseFloat(r.querySelector('.g-wg').value)||0, wh = parseFloat(r.querySelector('.g-wh').value)||0, wsub = parseFloat(r.querySelector('.g-wsub').value)||0, nsub = parseFloat(r.querySelector('.g-nsub').value)||0;
+  const gsiEl = r.querySelector('.res-gsi'), hsiEl = r.querySelector('.res-hsi'), fekEl = r.querySelector('.res-fek');
+  
+  if(wt > 0 && wg > 0) { gsiEl.className='res-gsi val-num'; gsiEl.textContent = ((wg/wt)*100).toFixed(2); } else { gsiEl.className='res-gsi val-dim'; gsiEl.textContent = '—'; }
+  if(wt > 0 && wh > 0) { hsiEl.className='res-hsi val-num'; hsiEl.textContent = ((wh/wt)*100).toFixed(2); } else { hsiEl.className='res-hsi val-dim'; hsiEl.textContent = '—'; }
+  if(wg > 0 && wsub > 0 && nsub > 0) { fekEl.className='res-fek val-num'; fekEl.textContent = Math.round((wg/wsub)*nsub).toLocaleString('id-ID'); } else { fekEl.className='res-fek val-dim'; fekEl.textContent = '—'; }
 }
 
 // ===================================================================
@@ -710,7 +834,7 @@ function calcPlkKin() {
 }
 
 // ===================================================================
-// WATER QUALITY DYNAMIC EWS (Fixed Class Shifting & Added Alkalinitas)
+// WATER QUALITY DYNAMIC EWS
 // ===================================================================
 function toggleWaterColumns() {
     const list = {'col-temp':'chkTemp','col-ph':'chkPh','col-do':'chkDo','col-tan':'chkTan', 'col-alk':'chkAlk', 'col-tds':'chkTds','col-kecerahan':'chkKecerahan','col-nitrit':'chkNitrit','col-nitrat':'chkNitrat','col-bod':'chkBod','col-tom':'chkTom'};
@@ -721,7 +845,8 @@ function addWaterRow() {
   const tb = document.getElementById('waterBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
   const c = id => document.getElementById(id).checked ? '' : 'none';
   tr.innerHTML = `
-    <td><input type="number" class="cell-input w-day" value="${tb.rows.length+1}"></td>
+    <td><input type="number" class="cell-input w-day" value="${tb.rows.length+1}" oninput="updateChartWQ()"></td>
+    <td style="min-width:120px;"><input type="text" class="cell-input text-left w-ket" placeholder="${isFirst ? 'Cth: Pagi / Wadah 1' : ''}"></td>
     <td class="col-temp" style="display:${c('chkTemp')}"><input type="number" class="cell-input w-temp" step="0.1" value="${isFirst ? '28.5' : ''}" oninput="evalWater()"></td>
     <td class="col-ph" style="display:${c('chkPh')}"><input type="number" class="cell-input w-ph" step="0.1" value="${isFirst ? '7.5' : ''}" oninput="evalWater()"></td>
     <td class="col-do" style="display:${c('chkDo')}"><input type="number" class="cell-input w-do" step="0.1" value="${isFirst ? '6.0' : ''}" oninput="evalWater()"></td>
@@ -760,13 +885,13 @@ function evalWater() {
         const nh3El = r.querySelector('.w-nh3');
         if(useTemp && usePh) {
             nh3 = calcNH3(n, p, t); 
-            nh3El.className='col-tan w-nh3 val-num'; // Preserving .col-tan explicitly
+            nh3El.className='col-tan w-nh3 val-num';
             nh3El.textContent=nh3.toFixed(4);
             if(nh3>0.02) nh3El.style.color='var(--danger)'; else if(nh3>0.01) nh3El.style.color='var(--warning)'; else nh3El.style.color='var(--success)';
             if(nh3>=0.02 || n>=0.5) isCrit=true; else if(nh3>=0.01 || n>=0.3) isWarn=true;
             amoniaHist.push({tan:n, nh3});
         } else {
-            nh3El.className='col-tan w-nh3 val-dim'; // Preserving .col-tan explicitly
+            nh3El.className='col-tan w-nh3 val-dim';
             nh3El.innerHTML = '<span class="badge badge-neutral" style="font-size:9px;">T & pH Req</span>';
         }
     }
@@ -777,6 +902,8 @@ function evalWater() {
     latest = {t,p,d,n,nh3,alk,nitrit}; hasValid = true;
     if(isCrit) scEl.innerHTML='<span class="badge badge-danger">⚠ Kritis</span>'; else if(isWarn) scEl.innerHTML='<span class="badge badge-warning">Waspada</span>'; else scEl.innerHTML='<span class="badge badge-success">Optimal</span>';
   });
+
+  updateChartWQ();
 
   const pnl = document.getElementById('ewsPanel');
   if(!hasValid||!latest) { pnl.style.borderLeftColor='var(--text3)'; pnl.innerHTML='<strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data pada tabel untuk mengaktifkan AI rekomendasi.</span>'; return; }
@@ -789,7 +916,7 @@ function evalWater() {
   else if (usePh && latest.p<=6.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>pH terlalu asam.</strong> Aplikasikan kapur dolomit/kalsium.'; }
   else if (usePh && latest.p>=8.5) { bColor='var(--danger)'; icon='🚨'; adv='<strong>pH terlampau basa.</strong> Hentikan pengapuran, sirkulasi air baru.'; }
   else if (useDo && latest.d<=3.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>DO kritis.</strong> Segera aktifkan kincir air/aerasi tambahan.'; }
-  else if (useTemp && latest.t<=22.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Suhu terlalu dingin ekstrem.</strong> Fisiologis ikan drop, awasi infeksi sekunder.'; }
+  else if (useTemp && latest.t<=22.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Suhu terlalu dingin ekstrem.</strong> Fisiologis drop, awasi infeksi sekunder.'; }
   else if (useTemp && latest.t>=34.0) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Suhu terlalu panas ekstrem.</strong> Stres termal letal, naikkan volume air/naungan.'; }
   else if (useAlk && latest.alk<40) { bColor='var(--danger)'; icon='🚨'; adv='<strong>Alkalinitas sangat rendah (< 40).</strong> Risiko <em>pH crash</em> di malam hari tinggi. Tebar kapur karbonat/bikarbonat.'; }
   else if (useTan && useTemp && usePh && latest.nh3>=0.01) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>NH₃ sub-letal.</strong> Kurangi Feeding Rate 20%.'; }
@@ -838,7 +965,7 @@ function cZ(i){
 }
 
 // ===================================================================
-// MOLECULAR LAB TOOLS
+// MOLECULAR LAB TOOLS & PCR MASTER MIX VALIDATION
 // ===================================================================
 function cleanSeq(s) { return s.toUpperCase().replace(/[^ATCG]/g,''); }
 function calcTm(seq) {
@@ -863,11 +990,41 @@ function analyzePrimer() {
 }
 function calcPCR() {
   const s=parseFloat(document.getElementById('pcrSamples').value)||0, t=parseFloat(document.getElementById('pcrTargetVol').value)||0;
-  const ids=['vWater','vMix','vFwd','vRev']; let totalSingle=0;
-  ids.forEach((id,idx) => { let v=parseFloat(document.getElementById(id).value)||0; totalSingle+=v; document.querySelectorAll('.res-pcr')[idx].textContent=(v*s).toFixed(1); document.querySelectorAll('.res-pcr-ov')[idx].textContent=(v*s*1.1).toFixed(1); });
-  document.getElementById('mixTotalSingle').textContent=totalSingle.toFixed(1)+' µL'; document.getElementById('mixTotalN').textContent=(totalSingle*s).toFixed(1)+' µL'; document.getElementById('mixTotalNov').textContent=(totalSingle*s*1.1).toFixed(1)+' µL';
+  const templateVol = parseFloat(document.getElementById('pcrTemplateVol').value)||0;
+  const ids=['vWater','vMix','vFwd','vRev']; 
+  let totalSingle=0;
+  let hasVal = false;
+  
+  ids.forEach((id,idx) => { 
+      const valStr = document.getElementById(id).value;
+      let v=parseFloat(valStr)||0; 
+      if(valStr !== "") hasVal = true;
+      totalSingle+=v; 
+      document.querySelectorAll('.res-pcr')[idx].textContent=(v*s).toFixed(1); 
+      document.querySelectorAll('.res-pcr-ov')[idx].textContent=(v*s*1.1).toFixed(1); 
+  });
+  
+  document.getElementById('mixTotalSingle').textContent=totalSingle.toFixed(1)+' µL'; 
+  document.getElementById('mixTotalN').textContent=(totalSingle*s).toFixed(1)+' µL'; 
+  document.getElementById('mixTotalNov').textContent=(totalSingle*s*1.1).toFixed(1)+' µL';
+
+  // Validation Logic restored
+  const al = document.getElementById('mixAlert');
+  if (hasVal && t > 0) {
+      const expectedMix = t - templateVol;
+      const diff = totalSingle - expectedMix;
+      if (Math.abs(diff) > 0.1) {
+          al.style.display = 'block';
+          let statusText = diff > 0 ? `Kelebihan ${diff.toFixed(1)} µL` : `Kurang ${Math.abs(diff).toFixed(1)} µL`;
+          al.innerHTML = `⚠ Total komponen mix Anda = <strong>${totalSingle.toFixed(1)} µL</strong>. Target Master Mix seharusnya = <strong>${expectedMix.toFixed(1)} µL</strong> <span style="color:var(--danger); font-weight:bold;">[${statusText}]</span> agar Total Reaksi pas di ${t} µL.`;
+      } else {
+          al.style.display = 'none';
+      }
+  } else {
+      al.style.display = 'none';
+  }
 }
-function updateTemplateVol() { document.getElementById('tblTemplateVol').value=document.getElementById('pcrTemplateVol').value; }
+function updateTemplateVol() { document.getElementById('tblTemplateVol').value=document.getElementById('pcrTemplateVol').value; calcPCR(); }
 function addGelRow() {
   const b=document.getElementById('gelBody'); const w=b.rows.length; const isFirst = w===0;
   b.insertRow().innerHTML=`<td style="text-align:center;">${isFirst?'M (Marker)':'W'+w}</td><td><input class="cell-input text-left" value="${isFirst?'Ladder 100bp':''}"></td><td><input type="number" class="cell-input" value="${isFirst?'100':''}"></td><td><select class="cell-select"><option>Tajam</option><option>Smear</option></select></td><td></td>`;
@@ -942,7 +1099,7 @@ function exportCSV(tId, fn) {
 }
 
 window.onload = function() {
-  toggleWaterColumns(); toggleHealthColumns(); addInvivoRow(); addHealthRow(); addPakanRow(); addProksimatRow(); addPlkDensRow(); addWaterRow(); addOdRow(); addTpcRow(); addZonaRow(); addGelRow(); loadLogbook(); loadInventory(); loadNeeds();
+  toggleWaterColumns(); toggleHealthColumns(); addInvivoRow(); addHealthRow(); addGonadRow(); addPakanRow(); addProksimatRow(); addPlkDensRow(); addWaterRow(); addOdRow(); addTpcRow(); addZonaRow(); addGelRow(); loadLogbook(); loadInventory(); loadNeeds();
   
   // Auto-fill Molekuler
   document.getElementById('seqFwd').value = 'ATGCGTACGTAGCTAGCTA'; document.getElementById('seqRev').value = 'CGATGCTAGCTAGCTAGCT'; document.getElementById('seqTemplate').value = 'ATGCGTACGTAGCTAGCTATTCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGAGCTAGCTAGCTAGCATCG';
