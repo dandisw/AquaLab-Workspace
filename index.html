@@ -162,6 +162,7 @@ tbody tr:hover td { background: var(--surface-hover); }
 .section-label:first-child { margin-top: 0; }
 .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
+/* Responsive Mobile */
 @media (max-width: 768px) {
   .main-container { flex-direction: column; }
   .sidebar { width: 100%; height: auto; flex-direction: row; padding: 10px 15px; border-right: none; border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
@@ -277,10 +278,10 @@ tbody tr:hover td { background: var(--surface-hover); }
         </div>
         
         <div id="chartContainerHealth" class="chart-grid" style="display:none;">
-            <div class="chart-box"><canvas id="chartRBC"></canvas></div>
-            <div class="chart-box"><canvas id="chartWBC"></canvas></div>
-            <div class="chart-box"><canvas id="chartGlu"></canvas></div>
-            <div class="chart-box"><canvas id="chartTPC"></canvas></div>
+            <div class="chart-box" id="boxChartRBC"><canvas id="chartRBC"></canvas></div>
+            <div class="chart-box" id="boxChartWBC"><canvas id="chartWBC"></canvas></div>
+            <div class="chart-box" id="boxChartGlu"><canvas id="chartGlu"></canvas></div>
+            <div class="chart-box" id="boxChartTPC"><canvas id="chartTPC"></canvas></div>
         </div>
 
         <div class="param-settings">
@@ -414,7 +415,7 @@ tbody tr:hover td { background: var(--surface-hover); }
 
     <div id="v-water" class="tab-pane">
       <div class="page-header">
-        <div><div class="page-title">EWS Kualitas Air Dinamis</div><div class="page-desc">Evaluasi status lingkungan, rasio C/N Bioflok, dan risiko toksisitas.</div></div>
+        <div><div class="page-title">EWS Kualitas Air Dinamis</div><div class="page-desc">Evaluasi status lingkungan, rasio C/N Bioflok, dan risiko toksisitas secara terintegrasi.</div></div>
         <div class="toolbar">
           <button class="btn btn-outline btn-sm" id="btnToggleChartWQ" onclick="toggleChart('chartContainerWQ', 'btnToggleChartWQ', updateChartWQ)">📈 Tampilkan Grafik</button>
           <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('waterTable', 'SPSS_KualitasAir.csv')">📊 Ekspor SPSS</button>
@@ -426,10 +427,17 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div id="wq-harian" class="sub-pane wq-group active">
           
           <div id="chartContainerWQ" class="chart-grid" style="display:none;">
-              <div class="chart-box"><canvas id="chartTemp"></canvas></div>
-              <div class="chart-box"><canvas id="chartPh"></canvas></div>
-              <div class="chart-box"><canvas id="chartDo"></canvas></div>
-              <div class="chart-box"><canvas id="chartTan"></canvas></div>
+              <div class="chart-box" id="boxChartTemp"><canvas id="chartTemp"></canvas></div>
+              <div class="chart-box" id="boxChartPh"><canvas id="chartPh"></canvas></div>
+              <div class="chart-box" id="boxChartDo"><canvas id="chartDo"></canvas></div>
+              <div class="chart-box" id="boxChartTan"><canvas id="chartTan"></canvas></div>
+              <div class="chart-box" id="boxChartAlk"><canvas id="chartAlk"></canvas></div>
+              <div class="chart-box" id="boxChartTds"><canvas id="chartTds"></canvas></div>
+              <div class="chart-box" id="boxChartKecerahan"><canvas id="chartKecerahan"></canvas></div>
+              <div class="chart-box" id="boxChartNitrit"><canvas id="chartNitrit"></canvas></div>
+              <div class="chart-box" id="boxChartNitrat"><canvas id="chartNitrat"></canvas></div>
+              <div class="chart-box" id="boxChartBod"><canvas id="chartBod"></canvas></div>
+              <div class="chart-box" id="boxChartTom"><canvas id="chartTom"></canvas></div>
           </div>
 
           <div class="param-settings"><span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER AKTIF:</span><label class="param-check"><input type="checkbox" id="chkTemp" checked onchange="toggleWaterColumns()"> Suhu</label><label class="param-check"><input type="checkbox" id="chkPh" checked onchange="toggleWaterColumns()"> pH</label><label class="param-check"><input type="checkbox" id="chkDo" checked onchange="toggleWaterColumns()"> DO</label><label class="param-check"><input type="checkbox" id="chkTan" checked onchange="toggleWaterColumns()"> Amonia (TAN)</label><label class="param-check"><input type="checkbox" id="chkAlk" checked onchange="toggleWaterColumns()"> Alkalinitas</label><label class="param-check"><input type="checkbox" id="chkTds" onchange="toggleWaterColumns()"> TDS</label><label class="param-check"><input type="checkbox" id="chkKecerahan" onchange="toggleWaterColumns()"> Kecerahan</label><label class="param-check"><input type="checkbox" id="chkNitrit" onchange="toggleWaterColumns()"> Nitrit</label><label class="param-check"><input type="checkbox" id="chkNitrat" onchange="toggleWaterColumns()"> Nitrat</label><label class="param-check"><input type="checkbox" id="chkBod" onchange="toggleWaterColumns()"> BOD</label><label class="param-check"><input type="checkbox" id="chkTom" onchange="toggleWaterColumns()"> TOM</label></div>
@@ -587,7 +595,7 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="legend" style="border:none; background:transparent;">
         <strong>Kebutuhan Karbon Bioflok (\(\Delta C\))</strong> = TAN (g) \(\times\) Target C/N Ratio. <strong>Dosis Molase (g)</strong> = \(\Delta C\) / (%C Bahan Baku / 100)<br>
         <strong>Kebutuhan Bahan Kimia (Sterilisasi)</strong> = (Volume Air \(\times\) Target ppm) / (% Kemurnian Aktif) / 1000.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (Bioflok): Crab, R., Defoirdt, T., Bossier, P., & Verstraete, W. (2012). Biofloc technology in aquaculture: beneficial effects and future challenges. Aquaculture, 356, 351-356. <a href="https://doi.org/10.1016/j.aquaculture.2012.04.016" target="_blank" style="color:var(--primary)">doi:10.1016/j.aquaculture.2012.04.016</a></em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (Bioflok): Avnimelech, Y. (1999). Carbon/nitrogen ratio as a control element in aquaculture systems. Aquaculture, 176(3-4), 227-235. <a href="https://doi.org/10.1016/S0044-8486(99)00085-X" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(99)00085-X</a></em></span>
       </div>
 
       <div class="section-label">3. Reproduksi & Pembenihan (Gonad)</div>
@@ -595,15 +603,15 @@ tbody tr:hover td { background: var(--surface-hover); }
         <strong>GSI (Gonadosomatic Index)</strong> = (Wg / Wt) × 100 (%)<br>
         <strong>HSI (Hepatosomatic Index)</strong> = (Wh / Wt) × 100 (%)<br>
         <strong>Fekunditas Gravimetri</strong> = (Wg / w) × n (butir telur)<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Brewer, S. K., Rabeni, C. F., & Papoulias, D. P. (2008). Reproductive biology of the Topeka shiner. Transactions of the American Fisheries Society, 137(3), 728-742. <a href="https://doi.org/10.1577/T07-074.1" target="_blank" style="color:var(--primary)">doi:10.1577/T07-074.1</a><br>Standar Nasional: SNI 8111:2015 (Pembenihan Ikan Nila).</em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Effendie, M. I. (1997). Biologi Perikanan. Yayasan Pustaka Nusatama.</em></span>
       </div>
 
       <div class="section-label">4. Kesehatan Darah Ikan & Udang</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>Penghitungan Haemocytometer:</strong> Sel/mL = (Total Sel / Jml Kotak) \(\times\) 10⁴ \(\times\) Pengenceran.<br>
-        Tingginya <strong>TPC di organ hati</strong> (> 4 log CFU/g) mengindikasikan infeksi bakteri sistemik. Peningkatan drastis <strong>Gula Darah</strong> mengindikasikan hiperglikemia akibat respons stres hormon kortisol.<br>
+        Tingginya <strong>TPC di organ hati</strong> (> 4 log CFU/g) mengindikasikan infeksi bakteri sistemik. Peningkatan drastis <strong>Gula Darah</strong> mengindikasikan hiperglikemia akibat respons stres hormon kortisol. Penurunan <strong>THC</strong> pada Udang menandakan imunosupresi.<br>
         <span style="font-size:11px; color:var(--text3);"><em>Ref (Hematologi): Blaxhall, P. C., & Daisley, K. W. (1973). Routine haematological methods for use with fish blood. Journal of Fish Biology, 5(6), 771-781. <a href="https://doi.org/10.1111/j.1095-8649.1973.tb04510.x" target="_blank" style="color:var(--primary)">doi:10.1111/j.1095-8649.1973.tb04510.x</a><br>
-        Ref (Gula Darah): Barton, B. A. (2002). Stress in fishes: a diversity of responses. Integrative and Comparative Biology, 42(3), 517-525. <a href="https://doi.org/10.1093/icb/42.3.517" target="_blank" style="color:var(--primary)">doi:10.1093/icb/42.3.517</a><br>
+        Ref (Gula Darah): Wedemeyer, G. A., Barton, B. A., & McLeay, D. J. (1990). Stress and acclimation. In Methods for Fish Biology (pp. 451-489). American Fisheries Society.<br>
         Ref (Hemolymph Udang): Johansson, M. W., Keyser, P., Sritunyalucksana, K., & Söderhäll, K. (2000). The haemocytes of crustaceans. Aquaculture, 191(1-3), 45-52. <a href="https://doi.org/10.1016/S0044-8486(00)00342-9" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(00)00342-9</a></em></span>
       </div>
 
@@ -611,7 +619,7 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="legend" style="border:none; background:transparent;">
         <strong>NFE (Nitrogen-Free Extract)</strong> = 100 - (Protein + Lemak + Serat + Abu + Air)<br>
         <strong>Formulasi Pearson Square</strong> digunakan untuk mencari proporsi 2 bahan (Basal & Suplemen) terhadap target nutrisi.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Referensi: National Research Council (NRC). (2011). Nutrient Requirements of Fish and Shrimp. National Academies Press. <a href="https://doi.org/10.17226/13039" target="_blank" style="color:var(--primary)">doi:10.17226/13039</a></em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Tacon, A. G. J. (1990). Standard methods for the nutrition and feeding of farmed fish and shrimp. FAO Field Document.</em></span>
       </div>
 
       <div class="section-label">6. Kualitas Air & Plankton</div>
@@ -621,7 +629,7 @@ tbody tr:hover td { background: var(--surface-hover); }
         <strong>Laju Pertumbuhan (K)</strong> = (ln N₂ − ln N₁) / (t₂ − t₁).<br>
         <span style="font-size:11px; color:var(--text3);"><em>Ref (Ekologi): Shannon, C. E. (1948). A mathematical theory of communication. The Bell System Technical Journal, 27(3), 379-423. <a href="https://doi.org/10.1002/j.1538-7305.1948.tb01338.x" target="_blank" style="color:var(--primary)">doi:10.1002/j.1538-7305.1948.tb01338.x</a><br>
         Ref (Amonia): Emerson, K., Russo, R. C., Lund, R. E., & Thurston, R. V. (1975). Journal of the Fisheries Board of Canada, 32(12), 2379-2383. <a href="https://doi.org/10.1139/f75-274" target="_blank" style="color:var(--primary)">doi:10.1139/f75-274</a><br>
-        Ref (Plankton Kinetika): Hillebrand, H., et al. (1999). Biovolume calculation for pelagic and benthic microalgae. Journal of Phycology, 35(3), 403-424. <a href="https://doi.org/10.1046/j.1529-8817.1999.3520403.x" target="_blank" style="color:var(--primary)">doi:10.1046/j.1529-8817.1999.3520403.x</a><br>Standar Nasional: SNI 8228.1:2015 (Kualitas Air Udang Vannamei).</em></span>
+        Ref (Plankton): Andersen, R. A. (2005). Algal Culturing Techniques. Elsevier Academic Press.</em></span>
       </div>
 
       <div class="section-label">7. Lab In Vitro (Mikrobiologi & Molekuler)</div>
@@ -633,10 +641,12 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="section-label">Riwayat Pembaruan (Changelog)</div>
       <ul style="font-size:12px; color:var(--text2); line-height:1.6; margin-left:15px; font-family:var(--font-mono);">
         <li><strong>v1.0 - v3.5</strong>: In Vivo, In Vitro (Mikrobiologi/PCR), EWS Air, Plankton dasar.</li>
-        <li><strong>v4.0 - v4.3</strong>: Kesehatan Darah, Analisis Gonad, Visualisasi Dasar.</li>
+        <li><strong>v4.0 - v4.3</strong>: Kesehatan Darah, Analisis Gonad, Bug fixes.</li>
         <li><strong>v4.4</strong>: Manajemen Bioflok (Rasio C/N), Formulasi Pakan (Pearson Square), Dosimetri.</li>
         <li><strong>v4.5</strong>: Indeks Ekologi Plankton (Shannon-Wiener), Kalkulator Haemocytometer.</li>
-        <li><strong>v4.6 (Current)</strong>: Optimalisasi *Chart* Independen per Parameter (In Vivo, Gonad, Kesehatan, Air), Perbaikan UI Thermocycler PCR, Kalkulasi Efisiensi Pakan (EP), dan Pembaruan Full Referensi Ilmiah Standar APA.</li>
+        <li><strong>v4.6</strong>: Perbaikan UI Thermocycler PCR, Kalkulasi Efisiensi Pakan (EP), Referensi Ilmiah Standar APA.</li>
+        <li><strong>v4.7</strong>: Optimasi *Chart Visibility* (Responsif dengan kotak centang / Checkbox) pada panel Kualitas Air dan Kesehatan Ikan.</li>
+        <li><strong>v4.8 (Current)</strong>: Perbaikan Bug visibilitas EWS Kualitas Air yang sinkron secara mutlak dengan parameter non-utama (Alkalinitas, TDS, Kecerahan, dsb).</li>
       </ul>
 
     </div>
@@ -759,20 +769,31 @@ function exportSPSS(tId, fn) { exportCSV(tId, fn); setTimeout(() => openDialog('
 // ===================================================================
 let healthCharts = {};
 function updateChartHealth() {
+    const cRbc = document.getElementById('chkRbc').checked;
+    const cWbc = document.getElementById('chkWbc').checked;
+    const cGlu = document.getElementById('chkGlu').checked;
+    const cTpc = document.getElementById('chkTpcLiver').checked;
+    
+    document.getElementById('boxChartRBC').style.display = cRbc ? 'block' : 'none';
+    document.getElementById('boxChartWBC').style.display = cWbc ? 'block' : 'none';
+    document.getElementById('boxChartGlu').style.display = cGlu ? 'block' : 'none';
+    document.getElementById('boxChartTPC').style.display = cTpc ? 'block' : 'none';
+
     if(document.getElementById('chartContainerHealth').style.display === 'none') return;
+    
     const labels = [], dataRBC = [], dataWBC = [], dataGlu = [], dataTPC = [];
     document.querySelectorAll('#healthBody tr').forEach(r => {
         labels.push(r.querySelector('.h-id').value || 'Ikan');
-        dataRBC.push(parseFloat(r.querySelector('.h-rbc').value) || 0);
-        dataWBC.push(parseFloat(r.querySelector('.h-wbc').value) || 0);
-        dataGlu.push(parseFloat(r.querySelector('.h-glu').value) || 0);
-        dataTPC.push(parseFloat(r.querySelector('.h-tpc').value) || 0);
+        if(cRbc) dataRBC.push(parseFloat(r.querySelector('.h-rbc').value) || 0);
+        if(cWbc) dataWBC.push(parseFloat(r.querySelector('.h-wbc').value) || 0);
+        if(cGlu) dataGlu.push(parseFloat(r.querySelector('.h-glu').value) || 0);
+        if(cTpc) dataTPC.push(parseFloat(r.querySelector('.h-tpc').value) || 0);
     });
 
-    renderChart(healthCharts, 'chartRBC', 'bar', 'Eritrosit (10⁶)', labels, dataRBC, '#f87171');
-    renderChart(healthCharts, 'chartWBC', 'bar', 'Leukosit (10³)', labels, dataWBC, '#34d399');
-    renderChart(healthCharts, 'chartGlu', 'bar', 'Glukosa (mg/dL)', labels, dataGlu, '#fbbf24');
-    renderChart(healthCharts, 'chartTPC', 'bar', 'TPC Hati (log)', labels, dataTPC, '#c084fc');
+    if(cRbc) renderChart(healthCharts, 'chartRBC', 'bar', 'Eritrosit (10⁶)', labels, dataRBC, '#f87171');
+    if(cWbc) renderChart(healthCharts, 'chartWBC', 'bar', 'Leukosit (10³)', labels, dataWBC, '#34d399');
+    if(cGlu) renderChart(healthCharts, 'chartGlu', 'bar', 'Glukosa (mg/dL)', labels, dataGlu, '#fbbf24');
+    if(cTpc) renderChart(healthCharts, 'chartTPC', 'bar', 'TPC Hati (log)', labels, dataTPC, '#c084fc');
 }
 
 function toggleHealthColumns() {
@@ -925,7 +946,6 @@ function updateChartGonad() {
         labels.push(r.querySelector('.cell-input.text-left').value || 'Induk');
         dataGSI.push(parseFloat(r.querySelector('.res-gsi').textContent) || 0);
         dataHSI.push(parseFloat(r.querySelector('.res-hsi').textContent) || 0);
-        // Remove dot separators for parsing Fekunditas
         let fekStr = r.querySelector('.res-fek').textContent.replace(/\./g, '');
         dataFek.push(parseFloat(fekStr) || 0);
     });
@@ -1005,21 +1025,37 @@ function calcPearson() {
 // ===================================================================
 let wqCharts = {};
 function updateChartWQ() {
-    if(document.getElementById('chartContainerWQ').style.display === 'none') return;
-    const labels = [], dataTemp = [], dataPh = [], dataDo = [], dataTan = [];
+    const pList = [
+        { id: 'Temp', chk: 'chkTemp', label: 'Suhu (°C)', col: '.w-temp', color: '#f87171' },
+        { id: 'Ph', chk: 'chkPh', label: 'pH', col: '.w-ph', color: '#34d399' },
+        { id: 'Do', chk: 'chkDo', label: 'DO (mg/L)', col: '.w-do', color: '#60a5fa' },
+        { id: 'Tan', chk: 'chkTan', label: 'TAN (ppm)', col: '.w-tan', color: '#fbbf24' },
+        { id: 'Alk', chk: 'chkAlk', label: 'Alkalinitas', col: '.w-alk', color: '#c084fc' },
+        { id: 'Tds', chk: 'chkTds', label: 'TDS (mg/L)', col: '.w-tds', color: '#a78bfa' },
+        { id: 'Kecerahan', chk: 'chkKecerahan', label: 'Kecerahan', col: '.w-kecerahan', color: '#fcd34d' },
+        { id: 'Nitrit', chk: 'chkNitrit', label: 'Nitrit', col: '.w-nitrit', color: '#f472b6' },
+        { id: 'Nitrat', chk: 'chkNitrat', label: 'Nitrat', col: '.w-nitrat', color: '#38bdf8' },
+        { id: 'Bod', chk: 'chkBod', label: 'BOD', col: '.w-bod', color: '#a3e635' },
+        { id: 'Tom', chk: 'chkTom', label: 'TOM', col: '.w-tom', color: '#fca5a5' }
+    ];
+
+    const labels = [];
+    const datasets = {};
+    pList.forEach(p => datasets[p.id] = []);
+
     document.querySelectorAll('#waterBody tr').forEach(r => {
         let labelText = r.querySelector('.w-ket').value;
         labels.push(labelText ? labelText : ('H-' + (r.querySelector('.w-day').value || '?')));
-        dataTemp.push(parseFloat(r.querySelector('.w-temp').value) || null);
-        dataPh.push(parseFloat(r.querySelector('.w-ph').value) || null);
-        dataDo.push(parseFloat(r.querySelector('.w-do').value) || null);
-        dataTan.push(parseFloat(r.querySelector('.w-tan').value) || null);
+        pList.forEach(p => datasets[p.id].push(parseFloat(r.querySelector(p.col).value) || null));
     });
 
-    renderChart(wqCharts, 'chartTemp', 'line', 'Suhu (°C)', labels, dataTemp, '#f87171');
-    renderChart(wqCharts, 'chartPh', 'line', 'pH', labels, dataPh, '#34d399');
-    renderChart(wqCharts, 'chartDo', 'line', 'DO (mg/L)', labels, dataDo, '#60a5fa');
-    renderChart(wqCharts, 'chartTan', 'line', 'TAN (ppm)', labels, dataTan, '#fbbf24');
+    pList.forEach(p => {
+        const isChecked = document.getElementById(p.chk).checked;
+        document.getElementById('boxChart' + p.id).style.display = isChecked ? 'block' : 'none';
+        if (isChecked && document.getElementById('chartContainerWQ').style.display !== 'none') {
+            renderChart(wqCharts, 'chart' + p.id, 'line', p.label, labels, datasets[p.id], p.color);
+        }
+    });
 }
 
 function toggleWaterColumns() {
