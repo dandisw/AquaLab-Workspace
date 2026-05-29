@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AquaLab Workspace by DSW</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%2338BDF8%22>🔬</text></svg>">
+<meta property="og:title" content="AquaLab Workspace by DSW">
+<meta property="og:description" content="Buku catatan laboratorium akuakultur digital komprehensif.">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -39,6 +42,26 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font-sans); background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; font-size: 14px; transition: background 0.3s, color 0.3s; }
+
+/* Class Khusus Warna Emoji DSW Ecosystem (Cyan/Biru AquaLab) */
+.dsw-icon-styled {
+    filter: grayscale(100%);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+    transition: filter 0.3s ease;
+}
+[data-theme="dark"] .dsw-icon-styled {
+    filter: grayscale(100%) brightness(1.2) sepia(1) hue-rotate(180deg) saturate(4);
+}
+[data-theme="light"] .dsw-icon-styled {
+    filter: grayscale(100%) brightness(0.8) sepia(1) hue-rotate(180deg) saturate(3);
+}
+.menu-item:hover .dsw-icon-styled,
+.btn:hover .dsw-icon-styled,
+.sub-btn.active .dsw-icon-styled {
+    filter: grayscale(100%) brightness(1.5) sepia(1) hue-rotate(180deg) saturate(6);
+}
 
 header { background: var(--surface); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 10; box-shadow: var(--shadow); transition: background 0.3s; }
 .brand { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
@@ -81,7 +104,7 @@ header { background: var(--surface); padding: 0 24px; height: 64px; display: fle
 .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
 .sub-nav { display: flex; gap: 4px; margin-bottom: 22px; background: var(--surface-hover); padding: 4px; border-radius: 8px; width: fit-content; border: 1px solid var(--border); }
-.sub-btn { padding: 7px 16px; border: none; background: transparent; color: var(--text3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.2s; font-family: var(--font-sans); }
+.sub-btn { padding: 7px 16px; border: none; background: transparent; color: var(--text3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.2s; font-family: var(--font-sans); display:flex; align-items:center; }
 .sub-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow); }
 .sub-pane { display: none; animation: fadeUp 0.2s ease; } .sub-pane.active { display: block; }
 
@@ -139,8 +162,9 @@ tbody tr:hover td { background: var(--surface-hover); }
 .param-check input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
 
 /* Chart Containers */
-.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
-.chart-box { background: var(--surface); padding: 10px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); height: 180px; position: relative; }
+.chart-container { background: var(--surface); padding: 15px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; box-shadow: var(--shadow); }
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
+.chart-box { background: var(--surface); padding: 10px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); text-align: center; }
 
 .toast-container { position: fixed; bottom: 20px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
 .toast { background: var(--surface); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; font-family: var(--font-sans); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 10px; pointer-events: all; animation: slideIn 0.3s ease; }
@@ -185,11 +209,11 @@ tbody tr:hover td { background: var(--surface-hover); }
 
 <header>
   <div class="brand">
-    <div class="brand-top"><span class="brand-icon">🔬</span><span class="brand-text">Aqua<span>Lab</span></span></div>
+    <div class="brand-top"><span class="brand-icon dsw-icon-styled">🔬</span><span class="brand-text">Aqua<span>Lab</span></span></div>
     <span class="brand-sub">Workspace by DSW</span>
   </div>
   <div class="header-actions">
-    <button class="btn btn-outline" id="theme-btn" onclick="toggleTheme()">🌗 Tema</button>
+    <button class="btn btn-outline" id="theme-btn" onclick="toggleTheme()"><span class="dsw-icon-styled">🌗</span> Tema</button>
   </div>
 </header>
 
@@ -197,35 +221,35 @@ tbody tr:hover td { background: var(--surface-hover); }
   <nav class="sidebar">
     <div class="menu-group">
       <div class="menu-title">Performa Budidaya</div>
-      <div class="menu-item active" onclick="switchView('v-invivo', this)">🐟 Analisis In Vivo</div>
-      <div class="menu-item" onclick="switchView('v-kesehatan', this)">🩺 Kesehatan Ikan & Udang</div>
+      <div class="menu-item active" onclick="switchView('v-invivo', this)"><span class="dsw-icon-styled">🐟</span> Analisis In Vivo</div>
+      <div class="menu-item" onclick="switchView('v-kesehatan', this)"><span class="dsw-icon-styled">🩺</span> Kesehatan Ikan & Udang</div>
     </div>
     <div class="menu-group">
       <div class="menu-title">Reproduksi & Pembenihan</div>
-      <div class="menu-item" onclick="switchView('v-gonad', this)">🔬 Analisis Gonad</div>
+      <div class="menu-item" onclick="switchView('v-gonad', this)"><span class="dsw-icon-styled">🔬</span> Analisis Gonad & Hatchery</div>
     </div>
     <div class="menu-group">
       <div class="menu-title">Nutrisi & Pakan</div>
-      <div class="menu-item" onclick="switchView('v-pakan', this)">🌾 Manajemen Pakan</div>
+      <div class="menu-item" onclick="switchView('v-pakan', this)"><span class="dsw-icon-styled">🌾</span> Manajemen Pakan</div>
     </div>
     <div class="menu-group">
       <div class="menu-title">Lingkungan & Ekologi</div>
-      <div class="menu-item" onclick="switchView('v-water', this)">💧 EWS Kualitas Air</div>
-      <div class="menu-item" onclick="switchView('v-plankton', this)">🌿 Analisis Plankton</div>
+      <div class="menu-item" onclick="switchView('v-water', this)"><span class="dsw-icon-styled">💧</span> EWS Kualitas Air</div>
+      <div class="menu-item" onclick="switchView('v-plankton', this)"><span class="dsw-icon-styled">🌿</span> Analisis Plankton</div>
     </div>
     <div class="menu-group">
       <div class="menu-title">Riset In Vitro</div>
-      <div class="menu-item" onclick="switchView('v-microbio', this)">🦠 Lab Mikrobiologi</div>
-      <div class="menu-item" onclick="switchView('v-invitro', this)">🧫 Lab Molekuler</div>
+      <div class="menu-item" onclick="switchView('v-microbio', this)"><span class="dsw-icon-styled">🦠</span> Lab Mikrobiologi</div>
+      <div class="menu-item" onclick="switchView('v-invitro', this)"><span class="dsw-icon-styled">🧫</span> Lab Molekuler</div>
     </div>
     <div class="menu-group">
       <div class="menu-title">Manajemen Data</div>
-      <div class="menu-item" onclick="switchView('v-logbook', this)">📓 Logbook Penelitian</div>
-      <div class="menu-item" onclick="switchView('v-inv', this)">📦 Inventaris Reagen</div>
-      <div class="menu-item" onclick="switchView('v-needs', this)">📋 Kebutuhan & Jadwal</div>
+      <div class="menu-item" onclick="switchView('v-logbook', this)"><span class="dsw-icon-styled">📓</span> Logbook Penelitian</div>
+      <div class="menu-item" onclick="switchView('v-inv', this)"><span class="dsw-icon-styled">📦</span> Inventaris Reagen</div>
+      <div class="menu-item" onclick="switchView('v-needs', this)"><span class="dsw-icon-styled">📋</span> Kebutuhan & Jadwal</div>
     </div>
     <div class="sidebar-footer">
-      <button class="btn btn-outline" style="width:100%; justify-content:center;" onclick="showHelp()">❓ Panduan Formula</button>
+      <button class="btn btn-outline" style="width:100%; justify-content:center;" onclick="showHelp()"><span class="dsw-icon-styled">❓</span> Panduan Formula</button>
     </div>
   </nav>
 
@@ -235,10 +259,10 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="page-header">
         <div><div class="page-title">Performa In Vivo</div><div class="page-desc">Kalkulasi performa komparatif: SR, ADG, SGR, FCR, dan EP berbasis biomassa.</div></div>
         <div class="toolbar">
-          <button class="btn btn-outline btn-sm" onclick="showHelp()">📐 Panduan</button>
-          <button class="btn btn-outline btn-sm" id="btnToggleChartInvivo" onclick="toggleChart('chartContainerInvivo', 'btnToggleChartInvivo', updateChartInvivo)">📈 Tampilkan Grafik</button>
-          <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('invivoTable', 'SPSS_InVivo.csv')">📊 Ekspor SPSS</button>
-          <button class="btn btn-success btn-sm" onclick="exportCSV('invivoTable', 'Performa_InVivo.csv')">📥 Unduh CSV</button>
+          <button class="btn btn-outline btn-sm" onclick="showHelp()"><span class="dsw-icon-styled">📐</span> Panduan</button>
+          <button class="btn btn-outline btn-sm" id="btnToggleChartInvivo" onclick="toggleChart('chartContainerInvivo', 'btnToggleChartInvivo', updateChartInvivo)"><span class="dsw-icon-styled">📈</span> Tampilkan Grafik</button>
+          <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('invivoTable', 'SPSS_InVivo.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button>
+          <button class="btn btn-success btn-sm" onclick="exportCSV('invivoTable', 'Performa_InVivo.csv')"><span class="dsw-icon-styled">📥</span> Unduh CSV</button>
         </div>
       </div>
       
@@ -265,16 +289,16 @@ tbody tr:hover td { background: var(--surface-hover); }
         <div><div class="page-title">Profil Kesehatan & Tindakan Medis</div><div class="page-desc">Analisis klinis darah (Haemocytometer) dan Dosimetri pemberian bahan kimia.</div></div>
       </div>
       <div class="sub-nav">
-        <button class="sub-btn active" onclick="openSub(this, 'kes-klinis', 'kes-group')">🩺 Profil Klinis Darah</button>
-        <button class="sub-btn" onclick="openSub(this, 'kes-haemo', 'kes-group')">🧮 Kalkulator Haemocytometer</button>
-        <button class="sub-btn" onclick="openSub(this, 'kes-dosis', 'kes-group')">💊 Tindakan & Dosimetri</button>
+        <button class="sub-btn active" onclick="openSub(this, 'kes-klinis', 'kes-group')"><span class="dsw-icon-styled">🩺</span> Profil Klinis Darah</button>
+        <button class="sub-btn" onclick="openSub(this, 'kes-haemo', 'kes-group')"><span class="dsw-icon-styled">🧮</span> Kalkulator Haemocytometer</button>
+        <button class="sub-btn" onclick="openSub(this, 'kes-dosis', 'kes-group')"><span class="dsw-icon-styled">💊</span> Tindakan & Dosimetri</button>
       </div>
 
       <div id="kes-klinis" class="sub-pane kes-group active">
         <div class="toolbar" style="justify-content:flex-end; margin-bottom:12px;">
-            <button class="btn btn-outline btn-sm" id="btnToggleChartHealth" onclick="toggleChart('chartContainerHealth', 'btnToggleChartHealth', updateChartHealth)">📈 Tampilkan Grafik</button>
-            <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('healthTable', 'SPSS_KesehatanIkan.csv')">📊 Ekspor SPSS</button>
-            <button class="btn btn-success btn-sm" onclick="exportCSV('healthTable', 'Kesehatan_Ikan.csv')">📥 Unduh CSV</button>
+            <button class="btn btn-outline btn-sm" id="btnToggleChartHealth" onclick="toggleChart('chartContainerHealth', 'btnToggleChartHealth', updateChartHealth)"><span class="dsw-icon-styled">📈</span> Tampilkan Grafik</button>
+            <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('healthTable', 'SPSS_KesehatanIkan.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('healthTable', 'Kesehatan_Ikan.csv')"><span class="dsw-icon-styled">📥</span> Unduh CSV</button>
         </div>
         
         <div id="chartContainerHealth" class="chart-grid" style="display:none;">
@@ -347,28 +371,72 @@ tbody tr:hover td { background: var(--surface-hover); }
 
     <div id="v-gonad" class="tab-pane">
       <div class="page-header">
-        <div><div class="page-title">Analisis Gonad & Pembenihan</div><div class="page-desc">Kalkulator Tingkat Kematangan Gonad (GSI, HSI) dan Estimasi Fekunditas.</div></div>
-        <div class="toolbar">
-            <button class="btn btn-outline btn-sm" id="btnToggleChartGonad" onclick="toggleChart('chartContainerGonad', 'btnToggleChartGonad', updateChartGonad)">📈 Tampilkan Grafik</button>
-            <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('gonadTable', 'SPSS_Gonad.csv')">📊 Ekspor SPSS</button>
-            <button class="btn btn-success btn-sm" onclick="exportCSV('gonadTable', 'Data_Gonad.csv')">📥 Unduh CSV</button>
-        </div>
+        <div><div class="page-title">Reproduksi & Pembenihan</div><div class="page-desc">Analisis Kematangan Gonad (GSI, HSI) dan Parameter Kinerja Hatchery (FR, HR, SR).</div></div>
       </div>
       
-      <div id="chartContainerGonad" class="chart-grid" style="display:none;">
-          <div class="chart-box"><canvas id="chartGSI"></canvas></div>
-          <div class="chart-box"><canvas id="chartHSI"></canvas></div>
-          <div class="chart-box"><canvas id="chartFek"></canvas></div>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="openSub(this, 'gonad-analisis', 'gonad-group')"><span class="dsw-icon-styled">🔬</span> Analisis Gonad</button>
+        <button class="sub-btn" onclick="openSub(this, 'gonad-hatchery', 'gonad-group')"><span class="dsw-icon-styled">🐣</span> Performa Hatchery</button>
       </div>
 
-      <div class="legend"><strong>Keterangan Somatik:</strong> <strong>Wt</strong> = Bobot total ikan (g) | <strong>Wg</strong> = Bobot total gonad (g) | <strong>Wh</strong> = Bobot total hati (g).<br><strong>Keterangan Fekunditas:</strong> <strong>w</strong> = Bobot sub-sampel gonad (g) | <strong>n</strong> = Jumlah telur pada sub-sampel.</div>
-      <div class="table-wrap">
-        <table id="gonadTable">
-          <thead><tr><th style="width:140px; text-align:left;">ID Induk Ikan</th><th>Wt (g)</th><th>Wg (g)</th><th>Wh (g)</th><th>w (g)</th><th>n (butir)</th><th>GSI (%)</th><th>HSI (%)</th><th>Fekunditas</th><th style="width:36px;"></th></tr></thead>
-          <tbody id="gonadBody"></tbody>
-        </table>
+      <div id="gonad-analisis" class="sub-pane gonad-group active">
+          <div class="toolbar" style="justify-content:flex-end; margin-bottom:12px;">
+              <button class="btn btn-outline btn-sm" id="btnToggleChartGonad" onclick="toggleChart('chartContainerGonad', 'btnToggleChartGonad', updateChartGonad)"><span class="dsw-icon-styled">📈</span> Tampilkan Grafik</button>
+              <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('gonadTable', 'SPSS_Gonad.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button>
+              <button class="btn btn-success btn-sm" onclick="exportCSV('gonadTable', 'Data_Gonad.csv')"><span class="dsw-icon-styled">📥</span> Unduh CSV</button>
+          </div>
+          
+          <div id="chartContainerGonad" class="chart-grid" style="display:none;">
+              <div class="chart-box"><canvas id="chartGSI"></canvas></div>
+              <div class="chart-box"><canvas id="chartHSI"></canvas></div>
+              <div class="chart-box"><canvas id="chartFek"></canvas></div>
+          </div>
+
+          <div class="legend"><strong>Keterangan Somatik:</strong> <strong>Wt</strong> = Bobot total ikan (g) | <strong>Wg</strong> = Bobot total gonad (g) | <strong>Wh</strong> = Bobot total hati (g).<br><strong>Keterangan Fekunditas:</strong> <strong>w</strong> = Bobot sub-sampel gonad (g) | <strong>n</strong> = Jumlah telur pada sub-sampel.</div>
+          <div class="table-wrap">
+            <table id="gonadTable">
+              <thead><tr><th style="width:140px; text-align:left;">ID Induk Ikan</th><th>Wt (g)</th><th>Wg (g)</th><th>Wh (g)</th><th>w (g)</th><th>n (butir)</th><th>GSI (%)</th><th>HSI (%)</th><th>Fekunditas</th><th style="width:36px;"></th></tr></thead>
+              <tbody id="gonadBody"></tbody>
+            </table>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="addGonadRow()">+ Tambah Data Induk</button>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="addGonadRow()">+ Tambah Data Induk</button>
+
+      <div id="gonad-hatchery" class="sub-pane gonad-group">
+          <div class="toolbar" style="justify-content:flex-end; margin-bottom:12px;">
+              <button class="btn btn-outline btn-sm" id="btnToggleChartHatchery" onclick="toggleChart('chartContainerHatchery', 'btnToggleChartHatchery', updateChartHatchery)"><span class="dsw-icon-styled">📈</span> Tampilkan Grafik</button>
+              <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('hatcheryTable', 'SPSS_Hatchery.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button>
+              <button class="btn btn-success btn-sm" onclick="exportCSV('hatcheryTable', 'Data_Hatchery.csv')"><span class="dsw-icon-styled">📥</span> Unduh CSV</button>
+          </div>
+
+          <div id="chartContainerHatchery" class="chart-grid" style="display:none;">
+              <div class="chart-box"><canvas id="chartFR"></canvas></div>
+              <div class="chart-box"><canvas id="chartHR"></canvas></div>
+              <div class="chart-box"><canvas id="chartSRLarva"></canvas></div>
+          </div>
+
+          <div class="legend"><strong>FR (Fertilization Rate)</strong> = Telur Terbuahi / Total Telur Sampel. <strong>HR (Hatching Rate)</strong> = Telur Menetas / Telur Terbuahi. <strong>SR Larva</strong> = Larva Hidup (Nt) / Larva Awal (N0).</div>
+          <div class="table-wrap">
+              <table id="hatcheryTable">
+                  <thead>
+                      <tr>
+                          <th style="width:140px; text-align:left;">ID Wadah / Batch</th>
+                          <th>Total Telur Sampel</th>
+                          <th>Telur Terbuahi</th>
+                          <th>Telur Menetas</th>
+                          <th>FR (%)</th>
+                          <th>HR (%)</th>
+                          <th>N0 (Larva Awal)</th>
+                          <th>Nt (Larva Akhir)</th>
+                          <th>SR Larva (%)</th>
+                          <th style="width:36px;"></th>
+                      </tr>
+                  </thead>
+                  <tbody id="hatcheryBody"></tbody>
+              </table>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="addHatcheryRow()">+ Tambah Data Batch</button>
+      </div>
     </div>
 
     <div id="v-pakan" class="tab-pane">
@@ -376,13 +444,13 @@ tbody tr:hover td { background: var(--surface-hover); }
         <div><div class="page-title">Manajemen Nutrisi & Pakan</div><div class="page-desc">Kalkulator Feeding Rate, Formulasi Pearson Square, dan Analisis Proksimat.</div></div>
       </div>
       <div class="sub-nav">
-        <button class="sub-btn active" onclick="openSub(this, 'pakan-harian', 'pakan-group')">🌾 Program Feeding Rate</button>
-        <button class="sub-btn" onclick="openSub(this, 'pakan-formulasi', 'pakan-group')">⚖️ Formulasi (Pearson)</button>
-        <button class="sub-btn" onclick="openSub(this, 'pakan-nutrisi', 'pakan-group')">🧪 Analisis Proksimat Pakan</button>
+        <button class="sub-btn active" onclick="openSub(this, 'pakan-harian', 'pakan-group')"><span class="dsw-icon-styled">🌾</span> Program Feeding Rate</button>
+        <button class="sub-btn" onclick="openSub(this, 'pakan-formulasi', 'pakan-group')"><span class="dsw-icon-styled">⚖️</span> Formulasi (Pearson)</button>
+        <button class="sub-btn" onclick="openSub(this, 'pakan-nutrisi', 'pakan-group')"><span class="dsw-icon-styled">🧪</span> Analisis Proksimat Pakan</button>
       </div>
       
       <div id="pakan-harian" class="sub-pane pakan-group active">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('feedTable', 'SPSS_Feeding.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('feedTable', 'Program_Feeding.csv')">📥 Ekspor CSV</button></div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('feedTable', 'SPSS_Feeding.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('feedTable', 'Program_Feeding.csv')"><span class="dsw-icon-styled">📥</span> Ekspor CSV</button></div>
         <div class="table-wrap"><table id="feedTable"><thead><tr><th style="text-align:left;">Hari/Minggu</th><th>ABW (g)</th><th>Populasi (ekor)</th><th>Biomassa (Kg)</th><th>FR (%)</th><th>Pakan Harian (Kg)</th><th style="width:36px;"></th></tr></thead><tbody id="feedBody"></tbody></table></div>
         <button class="btn btn-outline btn-sm" onclick="addPakanRow()">+ Tambah Data Feeding</button>
       </div>
@@ -407,7 +475,7 @@ tbody tr:hover td { background: var(--surface-hover); }
       </div>
 
       <div id="pakan-nutrisi" class="sub-pane pakan-group">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('proxTable', 'SPSS_Proksimat.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('proxTable', 'Analisis_Proksimat.csv')">📥 Ekspor CSV</button></div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('proxTable', 'SPSS_Proksimat.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('proxTable', 'Analisis_Proksimat.csv')"><span class="dsw-icon-styled">📥</span> Ekspor CSV</button></div>
         <div class="table-wrap"><table id="proxTable"><thead><tr><th style="text-align:left;">ID Pakan / Merek</th><th>Protein (%)</th><th>Lemak (%)</th><th>Serat Kasar (%)</th><th>Abu (%)</th><th>Kadar Air (%)</th><th>NFE (%)</th><th style="width:36px;"></th></tr></thead><tbody id="proxBody"></tbody></table></div>
         <button class="btn btn-outline btn-sm" onclick="addProksimatRow()">+ Tambah Data Proksimat</button>
       </div>
@@ -417,12 +485,15 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="page-header">
         <div><div class="page-title">EWS Kualitas Air Dinamis</div><div class="page-desc">Evaluasi status lingkungan, rasio C/N Bioflok, dan risiko toksisitas secara terintegrasi.</div></div>
         <div class="toolbar">
-          <button class="btn btn-outline btn-sm" id="btnToggleChartWQ" onclick="toggleChart('chartContainerWQ', 'btnToggleChartWQ', updateChartWQ)">📈 Tampilkan Grafik</button>
-          <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('waterTable', 'SPSS_KualitasAir.csv')">📊 Ekspor SPSS</button>
-          <button class="btn btn-success btn-sm" onclick="exportCSV('waterTable', 'Kualitas_Air.csv')">📥 Unduh CSV</button>
+          <button class="btn btn-outline btn-sm" id="btnToggleChartWQ" onclick="toggleChart('chartContainerWQ', 'btnToggleChartWQ', updateChartWQ)"><span class="dsw-icon-styled">📈</span> Tampilkan Grafik</button>
+          <button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('waterTable', 'SPSS_KualitasAir.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button>
+          <button class="btn btn-success btn-sm" onclick="exportCSV('waterTable', 'Kualitas_Air.csv')"><span class="dsw-icon-styled">📥</span> Unduh CSV</button>
         </div>
       </div>
-      <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'wq-harian', 'wq-group')">📊 Pemantauan Harian</button><button class="sub-btn" onclick="openSub(this, 'wq-bioflok', 'wq-group')">🦠 Manajemen Bioflok (C/N Ratio)</button></div>
+      <div class="sub-nav">
+          <button class="sub-btn active" onclick="openSub(this, 'wq-harian', 'wq-group')"><span class="dsw-icon-styled">📊</span> Pemantauan Harian</button>
+          <button class="sub-btn" onclick="openSub(this, 'wq-bioflok', 'wq-group')"><span class="dsw-icon-styled">🦠</span> Manajemen Bioflok (C/N Ratio)</button>
+      </div>
 
       <div id="wq-harian" class="sub-pane wq-group active">
           
@@ -441,7 +512,7 @@ tbody tr:hover td { background: var(--surface-hover); }
           </div>
 
           <div class="param-settings"><span style="font-size:12px; font-weight:700; color:var(--text3); margin-right:10px;">PARAMETER AKTIF:</span><label class="param-check"><input type="checkbox" id="chkTemp" checked onchange="toggleWaterColumns()"> Suhu</label><label class="param-check"><input type="checkbox" id="chkPh" checked onchange="toggleWaterColumns()"> pH</label><label class="param-check"><input type="checkbox" id="chkDo" checked onchange="toggleWaterColumns()"> DO</label><label class="param-check"><input type="checkbox" id="chkTan" checked onchange="toggleWaterColumns()"> Amonia (TAN)</label><label class="param-check"><input type="checkbox" id="chkAlk" checked onchange="toggleWaterColumns()"> Alkalinitas</label><label class="param-check"><input type="checkbox" id="chkTds" onchange="toggleWaterColumns()"> TDS</label><label class="param-check"><input type="checkbox" id="chkKecerahan" onchange="toggleWaterColumns()"> Kecerahan</label><label class="param-check"><input type="checkbox" id="chkNitrit" onchange="toggleWaterColumns()"> Nitrit</label><label class="param-check"><input type="checkbox" id="chkNitrat" onchange="toggleWaterColumns()"> Nitrat</label><label class="param-check"><input type="checkbox" id="chkBod" onchange="toggleWaterColumns()"> BOD</label><label class="param-check"><input type="checkbox" id="chkTom" onchange="toggleWaterColumns()"> TOM</label></div>
-          <div id="ewsPanel" class="ews-panel"><strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data harian untuk mengaktifkan analisis kualitas air.</span></div>
+          <div id="ewsPanel" class="ews-panel"><strong style="color:var(--primary); font-size:15px;"><span class="dsw-icon-styled">🔎</span> Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data harian untuk mengaktifkan analisis kualitas air.</span></div>
           <div class="table-wrap"><table id="waterTable"><thead><tr><th style="width:50px;">Hari</th><th style="min-width:120px;">Keterangan / Waktu</th><th class="col-temp">Suhu (°C)</th><th class="col-ph">pH</th><th class="col-do">DO (mg/L)</th><th class="col-tan">TAN (ppm)</th><th class="col-tan">NH₃ Bebas</th><th class="col-alk">Alkalinitas (mg/L)</th><th class="col-tds" style="display:none;">TDS (mg/L)</th><th class="col-kecerahan" style="display:none;">Kecerahan (cm)</th><th class="col-nitrit" style="display:none;">Nitrit (ppm)</th><th class="col-nitrat" style="display:none;">Nitrat (ppm)</th><th class="col-bod" style="display:none;">BOD (mg/L)</th><th class="col-tom" style="display:none;">TOM (mg/L)</th><th>Status</th><th style="width:36px;"></th></tr></thead><tbody id="waterBody"></tbody></table></div>
           <button class="btn btn-outline btn-sm" onclick="addWaterRow()">+ Tambah Data Harian</button>
       </div>
@@ -457,10 +528,10 @@ tbody tr:hover td { background: var(--surface-hover); }
 
     <div id="v-plankton" class="tab-pane">
       <div class="page-header"><div><div class="page-title">Analisis Plankton & Ekologi</div><div class="page-desc">Kalkulator Kepadatan (SRC/Haemocytometer), Kinetika Fase Eksponensial, dan Indeks Ekologi.</div></div></div>
-      <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'plk-dens', 'plk-group')">🧮 Kepadatan Sel</button><button class="sub-btn" onclick="openSub(this, 'plk-kin', 'plk-group')">📈 Kinetika Pertumbuhan</button><button class="sub-btn" onclick="openSub(this, 'plk-eko', 'plk-group')">🌍 Indeks Ekologi</button></div>
+      <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'plk-dens', 'plk-group')"><span class="dsw-icon-styled">🧮</span> Kepadatan Sel</button><button class="sub-btn" onclick="openSub(this, 'plk-kin', 'plk-group')"><span class="dsw-icon-styled">📈</span> Kinetika Pertumbuhan</button><button class="sub-btn" onclick="openSub(this, 'plk-eko', 'plk-group')"><span class="dsw-icon-styled">🌍</span> Indeks Ekologi</button></div>
 
       <div id="plk-dens" class="sub-pane plk-group active">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('plkTable', 'SPSS_Plankton.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('plkTable', 'Kepadatan_Plankton.csv')">📥 Ekspor CSV</button></div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('plkTable', 'SPSS_Plankton.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('plkTable', 'Kepadatan_Plankton.csv')"><span class="dsw-icon-styled">📥</span> Ekspor CSV</button></div>
         <div class="table-wrap">
           <table id="plkTable">
             <thead><tr>
@@ -498,7 +569,7 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'mic-bio', 'mic-group')">Biokinetika & OD600</button><button class="sub-btn" onclick="openSub(this, 'mic-tpc', 'mic-group')">TPC & Koloni</button><button class="sub-btn" onclick="openSub(this, 'mic-zona', 'mic-group')">Zona Hambat</button></div>
       
       <div id="mic-bio" class="sub-pane mic-group active">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('odTable', 'SPSS_OD600.csv')">📊 Ekspor SPSS</button></div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('odTable', 'SPSS_OD600.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button></div>
         <div class="table-wrap"><table id="odTable"><thead><tr><th style="text-align:left;">ID Isolat</th><th>OD600 (Abs)</th><th>Faktor Konversi</th><th>Estimasi Sel/mL</th><th style="width:36px;"></th></tr></thead><tbody id="odBody"></tbody></table></div>
         <button class="btn btn-outline btn-sm" style="margin-bottom:20px;" onclick="addOdRow()">+ Tambah Baris OD600</button>
         <div class="grid-2">
@@ -508,13 +579,13 @@ tbody tr:hover td { background: var(--surface-hover); }
       </div>
 
       <div id="mic-tpc" class="sub-pane mic-group">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('tpcTable', 'SPSS_TPC.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('tpcTable', 'TPC_Data.csv')">📥 Ekspor CSV</button></div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('tpcTable', 'SPSS_TPC.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('tpcTable', 'TPC_Data.csv')"><span class="dsw-icon-styled">📥</span> Ekspor CSV</button></div>
         <div class="table-wrap"><table id="tpcTable"><thead><tr><th style="text-align:left;">ID Isolat</th><th>Σ Koloni</th><th>Pengenceran (10^x)</th><th>Vol Plating (mL)</th><th>TPC (CFU/mL)</th><th style="width:36px;"></th></tr></thead><tbody id="tpcBody"></tbody></table></div>
         <button class="btn btn-outline btn-sm" onclick="addTpcRow()">+ Tambah Baris TPC</button>
       </div>
 
       <div id="mic-zona" class="sub-pane mic-group">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('zonaTable', 'SPSS_ZonaHambat.csv')">📊 Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('zonaTable', 'ZonaHambat.csv')">📥 Ekspor CSV</button></div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px; gap:8px;"><button class="btn btn-outline btn-sm" style="color:var(--purple); border-color:var(--purple);" onclick="exportSPSS('zonaTable', 'SPSS_ZonaHambat.csv')"><span class="dsw-icon-styled">📊</span> Ekspor SPSS</button><button class="btn btn-success btn-sm" onclick="exportCSV('zonaTable', 'ZonaHambat.csv')"><span class="dsw-icon-styled">📥</span> Ekspor CSV</button></div>
         <div class="table-wrap"><table id="zonaTable"><thead><tr><th style="text-align:left;">Isolat vs Patogen</th><th>Ø Total (mm)</th><th>Ø Sumuran/Disk (mm)</th><th>Lebar Zona (mm)</th><th>Kategori</th><th style="width:36px;"></th></tr></thead><tbody id="zonaBody"></tbody></table></div>
         <button class="btn btn-outline btn-sm" onclick="addZonaRow()">+ Tambah Sampel</button>
       </div>
@@ -556,19 +627,19 @@ tbody tr:hover td { background: var(--surface-hover); }
     </div>
 
     <div id="v-logbook" class="tab-pane">
-      <div class="page-header"><div><div class="page-title">Logbook Penelitian</div></div><div class="toolbar"><button class="btn btn-danger-soft btn-sm" onclick="clearLogbook()">🗑️ Reset</button><button class="btn btn-success btn-sm" onclick="exportCSV('logbookTable', 'Logbook.csv')">📥 Unduh</button></div></div>
+      <div class="page-header"><div><div class="page-title">Logbook Penelitian</div></div><div class="toolbar"><button class="btn btn-danger-soft btn-sm" onclick="clearLogbook()"><span class="dsw-icon-styled">🗑️</span> Reset</button><button class="btn btn-success btn-sm" onclick="exportCSV('logbookTable', 'Logbook.csv')"><span class="dsw-icon-styled">📥</span> Unduh</button></div></div>
       <div class="table-wrap"><table id="logbookTable"><thead><tr><th style="width:40px;">#</th><th style="width:130px;">Tanggal</th><th style="width:100px;">Waktu</th><th>Aktivitas</th><th>Observasi/Hasil</th><th>Catatan</th><th style="width:36px;"></th></tr></thead><tbody id="logbookBody"></tbody></table></div>
       <button class="btn btn-outline btn-sm" onclick="addLogbookRow()">+ Tambah Catatan</button>
     </div>
 
     <div id="v-inv" class="tab-pane">
-      <div class="page-header"><div><div class="page-title">Inventaris Lab</div></div><div class="toolbar"><button class="btn btn-success btn-sm" onclick="exportCSV('invTable', 'Inventaris.csv')">📥 CSV</button></div></div>
+      <div class="page-header"><div><div class="page-title">Inventaris Lab</div></div><div class="toolbar"><button class="btn btn-success btn-sm" onclick="exportCSV('invTable', 'Inventaris.csv')"><span class="dsw-icon-styled">📥</span> CSV</button></div></div>
       <div class="table-wrap"><table id="invTable"><thead><tr><th style="width:40px;">#</th><th>Nama Item</th><th>Kategori</th><th>Stok</th><th>Satuan</th><th>Suhu Simpan</th><th style="width:36px;"></th></tr></thead><tbody id="invBody"></tbody></table></div>
       <button class="btn btn-outline btn-sm" onclick="addInvRow()">+ Tambah Item</button>
     </div>
 
     <div id="v-needs" class="tab-pane">
-      <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'lab-req', 'lab-group')">📋 Permintaan Bahan</button><button class="sub-btn" onclick="openSub(this, 'lab-book', 'lab-group')">📅 Booking Alat</button></div>
+      <div class="sub-nav"><button class="sub-btn active" onclick="openSub(this, 'lab-req', 'lab-group')"><span class="dsw-icon-styled">📋</span> Permintaan Bahan</button><button class="sub-btn" onclick="openSub(this, 'lab-book', 'lab-group')"><span class="dsw-icon-styled">📅</span> Booking Alat</button></div>
       <div id="lab-req" class="sub-pane lab-group active"><div class="table-wrap"><table id="reqTable"><thead><tr><th>#</th><th>Bahan</th><th>Jumlah</th><th>Urgensi</th><th>Status</th><th style="width:36px;"></th></tr></thead><tbody id="reqBody"></tbody></table></div><button class="btn btn-outline btn-sm" onclick="addReqRow()">+ Tambah Request</button></div>
       <div id="lab-book" class="sub-pane lab-group"><div class="table-wrap"><table id="bookTable"><thead><tr><th>#</th><th>Nama Alat</th><th>Tanggal</th><th>Jam</th><th>User</th><th>Status</th><th style="width:36px;"></th></tr></thead><tbody id="bookBody"></tbody></table></div><button class="btn btn-outline btn-sm" onclick="addBookRow()">+ Tambah Jadwal</button></div>
     </div>
@@ -598,12 +669,14 @@ tbody tr:hover td { background: var(--surface-hover); }
         <span style="font-size:11px; color:var(--text3);"><em>Ref (Bioflok): Avnimelech, Y. (1999). Carbon/nitrogen ratio as a control element in aquaculture systems. Aquaculture, 176(3-4), 227-235. <a href="https://doi.org/10.1016/S0044-8486(99)00085-X" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(99)00085-X</a></em></span>
       </div>
 
-      <div class="section-label">3. Reproduksi & Pembenihan (Gonad)</div>
+      <div class="section-label">3. Reproduksi & Pembenihan (Gonad & Hatchery)</div>
       <div class="legend" style="border:none; background:transparent;">
         <strong>GSI (Gonadosomatic Index)</strong> = (Wg / Wt) × 100 (%)<br>
         <strong>HSI (Hepatosomatic Index)</strong> = (Wh / Wt) × 100 (%)<br>
         <strong>Fekunditas Gravimetri</strong> = (Wg / w) × n (butir telur)<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Effendie, M. I. (1997). Biologi Perikanan. Yayasan Pustaka Nusatama.</em></span>
+        <strong>FR (Fertilization Rate)</strong> = (Telur Terbuahi / Total Telur Sampel) × 100 (%)<br>
+        <strong>HR (Hatching Rate)</strong> = (Telur Menetas / Telur Terbuahi) × 100 (%)<br>
+        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Effendie, M. I. (1997). Biologi Perikanan. Yayasan Pustaka Nusatama.<br>Standar Nasional: SNI 8111:2015 (Pembenihan Ikan Nila).</em></span>
       </div>
 
       <div class="section-label">4. Kesehatan Darah Ikan & Udang</div>
@@ -611,7 +684,7 @@ tbody tr:hover td { background: var(--surface-hover); }
         <strong>Penghitungan Haemocytometer:</strong> Sel/mL = (Total Sel / Jml Kotak) \(\times\) 10⁴ \(\times\) Pengenceran.<br>
         Tingginya <strong>TPC di organ hati</strong> (> 4 log CFU/g) mengindikasikan infeksi bakteri sistemik. Peningkatan drastis <strong>Gula Darah</strong> mengindikasikan hiperglikemia akibat respons stres hormon kortisol. Penurunan <strong>THC</strong> pada Udang menandakan imunosupresi.<br>
         <span style="font-size:11px; color:var(--text3);"><em>Ref (Hematologi): Blaxhall, P. C., & Daisley, K. W. (1973). Routine haematological methods for use with fish blood. Journal of Fish Biology, 5(6), 771-781. <a href="https://doi.org/10.1111/j.1095-8649.1973.tb04510.x" target="_blank" style="color:var(--primary)">doi:10.1111/j.1095-8649.1973.tb04510.x</a><br>
-        Ref (Gula Darah): Wedemeyer, G. A., Barton, B. A., & McLeay, D. J. (1990). Stress and acclimation. In Methods for Fish Biology (pp. 451-489). American Fisheries Society.<br>
+        Ref (Gula Darah): Barton, B. A. (2002). Stress in fishes: a diversity of responses. Integrative and Comparative Biology, 42(3), 517-525. <a href="https://doi.org/10.1093/icb/42.3.517" target="_blank" style="color:var(--primary)">doi:10.1093/icb/42.3.517</a><br>
         Ref (Hemolymph Udang): Johansson, M. W., Keyser, P., Sritunyalucksana, K., & Söderhäll, K. (2000). The haemocytes of crustaceans. Aquaculture, 191(1-3), 45-52. <a href="https://doi.org/10.1016/S0044-8486(00)00342-9" target="_blank" style="color:var(--primary)">doi:10.1016/S0044-8486(00)00342-9</a></em></span>
       </div>
 
@@ -619,34 +692,35 @@ tbody tr:hover td { background: var(--surface-hover); }
       <div class="legend" style="border:none; background:transparent;">
         <strong>NFE (Nitrogen-Free Extract)</strong> = 100 - (Protein + Lemak + Serat + Abu + Air)<br>
         <strong>Formulasi Pearson Square</strong> digunakan untuk mencari proporsi 2 bahan (Basal & Suplemen) terhadap target nutrisi.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Referensi: Tacon, A. G. J. (1990). Standard methods for the nutrition and feeding of farmed fish and shrimp. FAO Field Document.</em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Referensi: National Research Council (NRC). (2011). Nutrient Requirements of Fish and Shrimp. National Academies Press. <a href="https://doi.org/10.17226/13039" target="_blank" style="color:var(--primary)">doi:10.17226/13039</a></em></span>
       </div>
 
       <div class="section-label">6. Kualitas Air & Plankton</div>
       <div class="legend" style="border:none; background:transparent;">
-        <strong>Indeks Shannon-Wiener (H')</strong> = - \(\sum(P_i \ln P_i)\), di mana \(P_i\) adalah proporsi individu spesies ke-i.<br>
         <strong>NH₃ Bebas (Un-ionized Ammonia)</strong> = TAN × fraksi(pH, T°C). Batas letal: <strong>≤ 0.02 mg/L</strong>.<br>
         <strong>Laju Pertumbuhan (K)</strong> = (ln N₂ − ln N₁) / (t₂ − t₁).<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (Ekologi): Shannon, C. E. (1948). A mathematical theory of communication. The Bell System Technical Journal, 27(3), 379-423. <a href="https://doi.org/10.1002/j.1538-7305.1948.tb01338.x" target="_blank" style="color:var(--primary)">doi:10.1002/j.1538-7305.1948.tb01338.x</a><br>
-        Ref (Amonia): Emerson, K., Russo, R. C., Lund, R. E., & Thurston, R. V. (1975). Journal of the Fisheries Board of Canada, 32(12), 2379-2383. <a href="https://doi.org/10.1139/f75-274" target="_blank" style="color:var(--primary)">doi:10.1139/f75-274</a><br>
-        Ref (Plankton): Andersen, R. A. (2005). Algal Culturing Techniques. Elsevier Academic Press.</em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (Amonia): Emerson, K., Russo, R. C., Lund, R. E., & Thurston, R. V. (1975). Journal of the Fisheries Board of Canada, 32(12), 2379-2383. <a href="https://doi.org/10.1139/f75-274" target="_blank" style="color:var(--primary)">doi:10.1139/f75-274</a><br>
+        Ref (Plankton Kinetika): Hillebrand, H., et al. (1999). Biovolume calculation for pelagic and benthic microalgae. Journal of Phycology, 35(3), 403-424. <a href="https://doi.org/10.1046/j.1529-8817.1999.3520403.x" target="_blank" style="color:var(--primary)">doi:10.1046/j.1529-8817.1999.3520403.x</a><br>Standar Nasional: SNI 8228.1:2015 (Kualitas Air Udang Vannamei).</em></span>
       </div>
 
       <div class="section-label">7. Lab In Vitro (Mikrobiologi & Molekuler)</div>
       <div class="legend" style="border:none; background:transparent;">
+        <strong>TPC Bakteri</strong> = (Σ koloni / vol plating) × 10<sup>faktor pengenceran</sup> CFU/mL.<br>
         <strong>Suhu Annealing PCR (Ta)</strong> = Tm terkecil dari primer − 5 °C.<br>
-        <span style="font-size:11px; color:var(--text3);"><em>Ref (Tm Primer): SantaLucia, J. (1998). A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. PNAS, 95(4), 1460-1465. <a href="https://doi.org/10.1073/pnas.95.4.1460" target="_blank" style="color:var(--primary)">doi:10.1073/pnas.95.4.1460</a></em></span>
+        <span style="font-size:11px; color:var(--text3);"><em>Ref (TPC): Sutton, S. (2011). Accuracy of plate counts. Journal of Validation Technology, 17(3), 42-46.<br>
+        Ref (Tm Primer): SantaLucia, J. (1998). A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. PNAS, 95(4), 1460-1465. <a href="https://doi.org/10.1073/pnas.95.4.1460" target="_blank" style="color:var(--primary)">doi:10.1073/pnas.95.4.1460</a></em></span>
       </div>
 
       <div class="section-label">Riwayat Pembaruan (Changelog)</div>
       <ul style="font-size:12px; color:var(--text2); line-height:1.6; margin-left:15px; font-family:var(--font-mono);">
         <li><strong>v1.0 - v3.5</strong>: In Vivo, In Vitro (Mikrobiologi/PCR), EWS Air, Plankton dasar.</li>
-        <li><strong>v4.0 - v4.3</strong>: Kesehatan Darah, Analisis Gonad, Bug fixes.</li>
+        <li><strong>v4.0 - v4.3</strong>: Kesehatan Darah, Analisis Gonad, Visualisasi Dasar.</li>
         <li><strong>v4.4</strong>: Manajemen Bioflok (Rasio C/N), Formulasi Pakan (Pearson Square), Dosimetri.</li>
         <li><strong>v4.5</strong>: Indeks Ekologi Plankton (Shannon-Wiener), Kalkulator Haemocytometer.</li>
         <li><strong>v4.6</strong>: Perbaikan UI Thermocycler PCR, Kalkulasi Efisiensi Pakan (EP), Referensi Ilmiah Standar APA.</li>
         <li><strong>v4.7</strong>: Optimasi *Chart Visibility* (Responsif dengan kotak centang / Checkbox) pada panel Kualitas Air dan Kesehatan Ikan.</li>
-        <li><strong>v4.8 (Current)</strong>: Perbaikan Bug visibilitas EWS Kualitas Air yang sinkron secara mutlak dengan parameter non-utama (Alkalinitas, TDS, Kecerahan, dsb).</li>
+        <li><strong>v4.8</strong>: Perbaikan Bug visibilitas EWS Kualitas Air yang sinkron secara mutlak dengan parameter non-utama (Alkalinitas, TDS, Kecerahan, dsb).</li>
+        <li><strong>v5.0 (Current)</strong>: Penambahan modul *Performa Hatchery* (FR, HR, SR Larva) dan penyeragaman *UI Theme Emojis* menggunakan CSS Filters khas DSW Ecosystem.</li>
       </ul>
 
     </div>
@@ -679,15 +753,15 @@ function openSub(btn, id, grp) {
 }
 function toggleTheme() { 
     document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); 
-    updateChartInvivo(); updateChartHealth(); updateChartGonad(); updateChartWQ(); 
+    updateChartInvivo(); updateChartHealth(); updateChartGonad(); updateChartHatchery(); updateChartWQ(); 
 }
 function toggleChart(containerId, btnId, updateFn) {
     const container = document.getElementById(containerId);
     const btn = document.getElementById(btnId);
     if(container.style.display === 'none') {
-        container.style.display = 'grid'; btn.innerHTML = '📉 Sembunyikan Grafik'; updateFn();
+        container.style.display = 'grid'; btn.innerHTML = '<span class="dsw-icon-styled">📉</span> Sembunyikan Grafik'; updateFn();
     } else {
-        container.style.display = 'none'; btn.innerHTML = '📈 Tampilkan Grafik';
+        container.style.display = 'none'; btn.innerHTML = '<span class="dsw-icon-styled">📈</span> Tampilkan Grafik';
     }
 }
 function openDialog(id) { document.getElementById(id).classList.add('active'); }
@@ -858,7 +932,7 @@ function evalHealth() {
 
   const pnl = document.getElementById('ewsHealthPanel');
   if(!hasValid || !latest) {
-    pnl.style.borderLeftColor='var(--text3)'; pnl.innerHTML='<strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar (Klinis Imunologi)</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data hematologi / hemolymph untuk mengaktifkan diagnosis patologis otomatis.</span>'; return;
+    pnl.style.borderLeftColor='var(--text3)'; pnl.innerHTML='<strong style="color:var(--primary); font-size:15px;"><span class="dsw-icon-styled">🔎</span> Dashboard Analitik Pakar (Klinis Imunologi)</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data hematologi / hemolymph untuk mengaktifkan diagnosis patologis otomatis.</span>'; return;
   }
 
   let adv='Profil klinis/hematologi normal, hewan dalam kondisi prima.', bColor='var(--success)', icon='✅';
@@ -873,7 +947,7 @@ function evalHealth() {
   else if (cGlu && latest.glu>150) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Gula Darah Naik.</strong> Hewan budidaya sedang memasuki fase resistensi stres hormon kortisol.'; }
   else if (cAf && latest.af>50) { bColor='var(--primary)'; icon='🛡️'; adv='<strong>Imunostimulasi Kuat.</strong> Aktivitas fagositosis makrofag sangat baik (efek positif imunostimulan).'; }
 
-  pnl.style.borderLeftColor = bColor; pnl.innerHTML = `<strong style="color:var(--primary); font-size:15px;">Diagnosis Fisiologis & Patologi</strong><br>${icon} ${adv}`;
+  pnl.style.borderLeftColor = bColor; pnl.innerHTML = `<strong style="color:var(--primary); font-size:15px;">Diagnosis Fisiologis & Patologi</strong><br><span class="dsw-icon-styled">${icon}</span> ${adv}`;
 }
 
 // Dosimetri Kimia
@@ -936,9 +1010,11 @@ function calcHaemo() {
 }
 
 // ===================================================================
-// GONAD & PEMBENIHAN
+// GONAD & HATCHERY (NEW)
 // ===================================================================
 let gonadCharts = {};
+let hatcheryCharts = {};
+
 function updateChartGonad() {
     if(document.getElementById('chartContainerGonad').style.display === 'none') return;
     const labels = [], dataGSI = [], dataHSI = [], dataFek = [];
@@ -955,6 +1031,21 @@ function updateChartGonad() {
     renderChart(gonadCharts, 'chartFek', 'bar', 'Fekunditas (Butir)', labels, dataFek, '#34d399');
 }
 
+function updateChartHatchery() {
+    if(document.getElementById('chartContainerHatchery').style.display === 'none') return;
+    const labels = [], dataFR = [], dataHR = [], dataSR = [];
+    document.querySelectorAll('#hatcheryBody tr').forEach(r => {
+        labels.push(r.querySelector('.hatch-id').value || 'Batch');
+        dataFR.push(parseFloat(r.querySelector('.res-fr').textContent) || 0);
+        dataHR.push(parseFloat(r.querySelector('.res-hr').textContent) || 0);
+        dataSR.push(parseFloat(r.querySelector('.res-sr-larva').textContent) || 0);
+    });
+
+    renderChart(hatcheryCharts, 'chartFR', 'bar', 'Fertilization Rate (%)', labels, dataFR, '#38bdf8');
+    renderChart(hatcheryCharts, 'chartHR', 'bar', 'Hatching Rate (%)', labels, dataHR, '#34d399');
+    renderChart(hatcheryCharts, 'chartSRLarva', 'bar', 'Survival Rate Larva (%)', labels, dataSR, '#a855f7');
+}
+
 function addGonadRow() {
   const tb = document.getElementById('gonadBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
   tr.innerHTML = `<td><input class="cell-input text-left" value="${isFirst ? 'Induk-01' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-wt" value="${isFirst ? '1500' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-wg" value="${isFirst ? '300' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-wh" value="${isFirst ? '45' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-wsub" value="${isFirst ? '1' : ''}" oninput="calcGonad(this)"></td><td><input type="number" class="cell-input g-nsub" value="${isFirst ? '1200' : ''}" oninput="calcGonad(this)"></td><td class="res-gsi val-dim" style="color:var(--primary); font-weight:bold;">—</td><td class="res-hsi val-dim" style="color:var(--warning); font-weight:bold;">—</td><td class="res-fek val-dim" style="color:var(--success); font-weight:bold;">—</td><td></td>`;
@@ -969,6 +1060,42 @@ function calcGonad(i) {
   if(wg > 0 && wsub > 0 && nsub > 0) { fekEl.className='res-fek val-num'; fekEl.textContent = Math.round((wg/wsub)*nsub).toLocaleString('id-ID'); } else { fekEl.className='res-fek val-dim'; fekEl.textContent = '—'; }
   updateChartGonad();
 }
+
+function addHatcheryRow() {
+    const tb = document.getElementById('hatcheryBody'); const isFirst = tb.rows.length === 0; const tr = tb.insertRow();
+    tr.innerHTML = `
+        <td><input class="cell-input text-left hatch-id" value="${isFirst ? 'Batch-01' : ''}" oninput="updateChartHatchery()"></td>
+        <td><input type="number" class="cell-input h-t-sampel" value="${isFirst ? '100' : ''}" oninput="calcHatchery(this)"></td>
+        <td><input type="number" class="cell-input h-t-buah" value="${isFirst ? '85' : ''}" oninput="calcHatchery(this)"></td>
+        <td><input type="number" class="cell-input h-t-netas" value="${isFirst ? '70' : ''}" oninput="calcHatchery(this)"></td>
+        <td class="res-fr val-num" style="color:var(--blue); font-weight:bold;">—</td>
+        <td class="res-hr val-num" style="color:var(--success); font-weight:bold;">—</td>
+        <td><input type="number" class="cell-input h-l-awal" value="${isFirst ? '1000' : ''}" oninput="calcHatchery(this)"></td>
+        <td><input type="number" class="cell-input h-l-akhir" value="${isFirst ? '850' : ''}" oninput="calcHatchery(this)"></td>
+        <td class="res-sr-larva val-num" style="color:var(--purple); font-weight:bold;">—</td>
+        <td></td>
+    `;
+    tr.cells[tr.cells.length-1].appendChild(makeDel(function(){ this.closest('tr').remove(); updateChartHatchery(); }));
+    if(isFirst) calcHatchery(tr.querySelector('.h-t-sampel'));
+}
+
+function calcHatchery(i) {
+    const r = i.closest('tr');
+    const ts = parseFloat(r.querySelector('.h-t-sampel').value) || 0;
+    const tb = parseFloat(r.querySelector('.h-t-buah').value) || 0;
+    const tn = parseFloat(r.querySelector('.h-t-netas').value) || 0;
+    const la = parseFloat(r.querySelector('.h-l-awal').value) || 0;
+    const lk = parseFloat(r.querySelector('.h-l-akhir').value) || 0;
+
+    const frEl = r.querySelector('.res-fr'), hrEl = r.querySelector('.res-hr'), srEl = r.querySelector('.res-sr-larva');
+
+    if(ts > 0 && tb >= 0) { frEl.textContent = ((tb/ts)*100).toFixed(2); } else { frEl.textContent = '—'; }
+    if(tb > 0 && tn >= 0) { hrEl.textContent = ((tn/tb)*100).toFixed(2); } else { hrEl.textContent = '—'; }
+    if(la > 0 && lk >= 0) { srEl.textContent = ((lk/la)*100).toFixed(2); } else { srEl.textContent = '—'; }
+
+    updateChartHatchery();
+}
+
 
 // ===================================================================
 // PAKAN ENGINE (FR, Pearson, Proximate)
@@ -1128,7 +1255,7 @@ function evalWater() {
   updateChartWQ();
 
   const pnl = document.getElementById('ewsPanel');
-  if(!hasValid||!latest) { pnl.style.borderLeftColor='var(--text3)'; pnl.innerHTML='<strong style="color:var(--primary); font-size:15px;">🔎 Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data pada tabel untuk mengaktifkan AI rekomendasi.</span>'; return; }
+  if(!hasValid||!latest) { pnl.style.borderLeftColor='var(--text3)'; pnl.innerHTML='<strong style="color:var(--primary); font-size:15px;"><span class="dsw-icon-styled">🔎</span> Dashboard Analitik Pakar</strong><br><span style="color:var(--text3); font-size:13px;">Lengkapi data pada tabel untuk mengaktifkan AI rekomendasi.</span>'; return; }
 
   let adv='Parameter air terpantau aman.', bColor='var(--success)', icon='✅';
   
@@ -1145,7 +1272,7 @@ function evalWater() {
   else if (useDo && latest.d<=4.5) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>DO rendah.</strong> Tingkatkan durasi kincir malam hari.'; }
   else if (useAlk && latest.alk<80) { bColor='var(--warning)'; icon='⚠️'; adv='<strong>Alkalinitas mendekati ambang bawah.</strong> <em>Buffering capacity</em> air melemah.'; }
 
-  pnl.style.borderLeftColor = bColor; pnl.innerHTML = `<strong style="color:var(--primary); font-size:15px;">Dashboard Analitik &amp; Rekomendasi</strong><br>${icon} ${adv}`;
+  pnl.style.borderLeftColor = bColor; pnl.innerHTML = `<strong style="color:var(--primary); font-size:15px;">Dashboard Analitik &amp; Rekomendasi</strong><br><span class="dsw-icon-styled">${icon}</span> ${adv}`;
 }
 
 function autoFillCarbon() {
@@ -1406,7 +1533,7 @@ function exportCSV(tId, fn) {
 }
 
 window.onload = function() {
-  toggleWaterColumns(); toggleHealthColumns(); addInvivoRow(); addHealthRow(); addGonadRow(); addPakanRow(); addProksimatRow(); addPlkDensRow(); addEcoRow(); addWaterRow(); addOdRow(); addTpcRow(); addZonaRow(); addGelRow(); loadLogbook(); loadInventory(); loadNeeds();
+  toggleWaterColumns(); toggleHealthColumns(); addInvivoRow(); addHealthRow(); addGonadRow(); addHatcheryRow(); addPakanRow(); addProksimatRow(); addPlkDensRow(); addEcoRow(); addWaterRow(); addOdRow(); addTpcRow(); addZonaRow(); addGelRow(); loadLogbook(); loadInventory(); loadNeeds();
   
   document.getElementById('seqFwd').value = 'ATGCGTACGTAGCTAGCTA'; document.getElementById('seqRev').value = 'CGATGCTAGCTAGCTAGCT'; document.getElementById('seqTemplate').value = 'ATGCGTACGTAGCTAGCTATTCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGAGCTAGCTAGCTAGCATCG';
   analyzePrimer(); document.getElementById('pcrSamples').value = '10'; document.getElementById('vWater').value = '8.5'; document.getElementById('vMix').value = '12.5'; document.getElementById('vFwd').value = '1'; document.getElementById('vRev').value = '1'; calcPCR(); updateTemplateVol();
